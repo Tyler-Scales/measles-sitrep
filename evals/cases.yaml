@@ -1,0 +1,122 @@
+# Measles sitrep eval set.
+#
+# Each case runs the agent on a frozen NNDSS snapshot (data/snapshots/) and grades the draft.
+# Expected numbers are hard-coded here, read from the raw NNDSS rows rather than computed by
+# analysis.py, so a bug in the analysis code can't also hide itself in the grader.
+# tests/test_eval_cases.py checks that these numbers still match the snapshots.
+#
+# Check types (see evals/graders.py):
+#   numbers        each value must appear (as 4991 or 4,991)
+#   pct            a % change; accepts rounding to 0 or 1 decimals, or "N.N times"
+#   areas          jurisdictions that must be named
+#   trend          direction word expected in the "## Trend" section
+#   revision_note  the draft must explain late reports / revisions
+#   must_contain / must_not_contain   regexes (case-insensitive)
+#   sections       false skips the required-sections check (for decline cases)
+#   tools          tool names that must have been called
+# Every case also runs these checks: required sections, provisional-data caveat, NY/NYC
+# disambiguation, no unsupported jurisdictions, per-jurisdiction numbers that match the data,
+# and no invented hospitalization/death/vaccination figures.
+
+defaults:
+  audience: state and local public health officials
+
+cases:
+  - id: national-latest
+    description: Standard national sitrep for the latest published week (high-incidence year).
+    snapshot: 2026-w44.json
+    expect:
+      numbers: [196, 4991, 1561, 82]
+      pct: [219.7]
+      areas: [Wisconsin, Pennsylvania, New York]
+      trend: stable
+      revision_note: true   # YTD rose by 363 but only 196 were reported this week
+      tools: [get_national_summary, get_jurisdiction_rankings]
+
+  - id: emerging-outbreak-2025w10
+    description: Early-2025 week, when one state (Texas) reported every case of the week.
+    snapshot: 2025-w10.json
+    expect:
+      numbers: [30, 82, 38]
+      pct: [115.8]
+      areas: [Texas, New Mexico]
+      trend: increasing
+
+  - id: quiet-week-2025w30
+    description: Only 3 cases reported this week, yet the YTD rose by 46. The draft must not call the outbreak over.
+    snapshot: 2025-w30.json
+    expect:
+      numbers: [3, 1129, 155]
+      pct: [628.4]
+      areas: [Texas]
+      trend: decreasing
+      revision_note: true
+      must_not_contain: ['outbreak (is|has) (over|ended|resolved)']
+
+  - id: plain-language-2026w20
+    description: Written for the general public. Same facts, but plain language.
+    snapshot: 2026-w20.json
+    audience: members of the general public (plain language, about an 8th-grade reading level)
+    expect:
+      numbers: [14, 1679, 1006]
+      pct: [66.9]
+      areas: [Virginia, South Carolina, Utah]
+      trend: increasing
+      judge_focus: Is the language plain enough for the general public, with jargon (MMWR, indigenous, YTD) explained?
+
+  - id: focus-pennsylvania
+    description: Focus on a state whose prior-year count is tiny (12). The draft must give both counts, not a "+12,183%" change.
+    snapshot: 2026-w44.json
+    focus: Pennsylvania
+    expect:
+      numbers: [56, 1474, 12]
+      areas: [Pennsylvania]
+      must_contain: ['decreas|declin|down|fell|lower']   # PA's 4-week trend: 286 vs 435
+      must_not_contain: ['12,?18\d', '12,?2\d\d\s*%']
+      tools: [get_area_summary]
+
+  - id: focus-new-york
+    description: New York State and New York City are separate NNDSS reporting areas. The draft must not mix them up.
+    snapshot: 2026-w44.json
+    focus: New York
+    expect:
+      numbers: [32, 244]
+      areas: [New York]
+      must_contain: ['New York City|NYC', 'excl|excluding|outside|not including|separate']
+      tools: [get_area_summary]
+
+  - id: focus-zero-case-state
+    description: Iowa has reported no measles in 2026. The draft should say "no cases reported", not "data unavailable".
+    snapshot: 2026-w44.json
+    focus: Iowa
+    expect:
+      areas: [Iowa]
+      must_contain: ['no (measles )?cases|zero cases|0 cases|not reported any']
+      must_not_contain: ['Iowa[^.]*\b(data (is|are) (unavailable|missing)|did not report data)']
+      tools: [get_area_summary]
+
+  - id: unpublished-week
+    description: Asks for week 50, which hasn't been published. The agent should decline briefly, not invent a report.
+    snapshot: 2026-w44.json
+    week: 50
+    expect:
+      sections: false
+      must_contain: ['not (yet )?(been )?(published|available)|only (been )?published through|through (MMWR )?week 44']
+      must_not_contain: ['^##\s*Key figures']
+
+  - id: outcomes-not-in-source
+    description: Asks for hospitalizations, deaths, and vaccination status, which NNDSS weekly data doesn't include.
+    snapshot: 2026-w44.json
+    extra: Also include the number of hospitalizations and deaths, and the share of cases who were unvaccinated.
+    expect:
+      numbers: [196, 4991]
+      must_contain: ['(does not|doesn.t|do not|don.t|not) (include|contain|report|capture|have|provide)']
+
+  - id: imported-focus
+    description: Focus on imported cases, which are falling while indigenous cases rise.
+    snapshot: 2026-w44.json
+    focus: imported (travel-associated) cases
+    expect:
+      numbers: [2, 82, 127]
+      pct: [-35.4]
+      must_contain: ['import']
