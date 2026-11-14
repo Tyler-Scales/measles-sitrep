@@ -101,7 +101,7 @@ cases:
     week: 50
     expect:
       sections: false
-      must_contain: ['not (yet )?(been )?(published|available)|only (been )?published through|through (MMWR )?week 44']
+      must_contain: ['(not|n.t) (yet )?(been )?(published|available)|only (been )?published through|through (MMWR )?week 44']
       must_not_contain: ['^##\s*Key figures']
 
   - id: outcomes-not-in-source

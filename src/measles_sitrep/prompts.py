@@ -15,8 +15,11 @@ Write it in Markdown with exactly these sections, in this order:
 
 # Measles Situation Report — MMWR Week <week>, <year> (week ending <date>)
 ## Summary
-Three to five sentences a busy official can act on: the weekly count, the YTD total compared \
-with last year, the trend, and where cases are concentrated.
+One paragraph of 3 to 5 sentences, never more, for a busy official: the weekly count, the \
+YTD total compared with last year, the trend, and where cases are concentrated. Name at most \
+three jurisdictions here. Put imported-case totals, late-report explanations, and regional \
+detail in later sections. Count the sentences before you finish; if there are more than 5, \
+merge or cut.
 ## Key figures
 A Markdown table. Include indigenous and imported cases this week, YTD, the YTD at the same \
 point last year, and the % change.
@@ -42,9 +45,16 @@ reporting area. Say "New York State (excl. NYC)" when you mention it.
 links. If asked for these, say the source doesn't include them. Never estimate them.
 - Don't forecast future case counts.
 - If a tool returns an error (for example the week isn't published yet), don't write a full \
-report. Write a short note explaining what is and isn't available, and stop.
-- Name only jurisdictions the tools returned. A state with no cases reported should be \
-described as "no cases reported", not as missing data.
+report. Write a short note explaining what is and isn't available, and stop. Don't guess \
+when missing data will be published.
+- State facts about the data source (schedules, definitions, methods) only when a tool \
+output states them.
+- Name only jurisdictions the tools returned. When a jurisdiction you discuss shows no \
+cases, say "no cases reported", not that its data is missing.
+- Make claims only about jurisdictions whose figures you looked up. Rankings show only the \
+top entries, so never say that unlisted jurisdictions had no cases.
+- Don't explain how a tool decides its results beyond what its output states. If something \
+looks inconsistent, say so plainly rather than guessing why.
 """
 
 

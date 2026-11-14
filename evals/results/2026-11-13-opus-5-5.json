@@ -1,0 +1,808 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "high",
+ "cases_passed": 10,
+ "cases": 10,
+ "checks_passed": 132,
+ "checks": 132,
+ "results": [
+  {
+   "id": "national-latest",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "4 sentences"
+    },
+    {
+     "name": "number:196",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:4991",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:1561",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:82",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "pct:219.7",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Wisconsin",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Pennsylvania",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:New York",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "trend:stable",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "revision_note",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:get_national_summary",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:get_jurisdiction_rankings",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Every figure checked matches the tool outputs: national, jurisdiction, imported, division, DC and trend numbers. Interpretive claims are also supported by the data. South Carolina and Utah having zero cases in weeks 37\u201344 follows from both 4-week totals being 0. The late-report inconsistency for Wisconsin, Minnesota and Indiana (YTD added exceeds the 4-week totals) is calculated correctly. The draft follows the tool's comparison notes, giving both counts instead of a % change where last year's YTD was under 20. It correctly states that New York excludes NYC and keeps indigenous and imported counts separate. Limitations are well flagged without inventing data. The report is clearly organized for health officials. Recommendations are standard measles-response actions tied to the observed increases, reporting delays and imports, with no invented specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "emerging-outbreak-2025w10",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "number:30",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:82",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:38",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "pct:115.8",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Texas",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:New Mexico",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "trend:increasing",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Every figure in the draft matches the tool outputs: national and Texas counts, YTD figures, percent shares, prior-52-week maxima, regional breakdown, newly affected jurisdictions, imported distribution, and Pennsylvania's -1 imported adjustment. The draft follows the tool's note to give both counts instead of a percent change for imported cases and avoids computing a percent change from a zero baseline. It correctly flags real inconsistencies in the data: late-report additions versus weekly counts, New Mexico's 8 added cases with 0 this week, California's week-7 first report alongside zero weekly counts, and the stale retrieval date. It also states what NNDSS does not provide. The report is well organized for state and local officials, with a summary, a key-figures table, geography, trend, limitations and actions. The recommendations are standard measles-response measures (clinician alerts, PEP timing, catch-up MMR, travel advice, data reconciliation) that follow from the concentrated, increasing indigenous transmission and the ongoing imported cases, and they add no invented specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "quiet-week-2025w30",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "4 sentences"
+    },
+    {
+     "name": "number:3",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:1129",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:155",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "pct:628.4",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Texas",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "trend:decreasing",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "revision_note",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "not_contains:/outbreak (is|has) (over|ended|resolved)/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "I checked every figure in the draft against the tool outputs and all of them match. This covers national counts, YTD values, percent changes, 4-week trends, jurisdiction rankings, imported leaders, census divisions, newly affected jurisdictions, the weekly series and the imported count of 0 in weeks 26\u201330. The draft says New Mexico's 19 added cases are late reports or revisions. That is a reasonable inference: NM had 0 cases in weeks 23\u201330 but its YTD rose. The draft openly flags real data inconsistencies (Washington, South Dakota, Utah, and the 2026 fetch timestamp) without trying to explain them. It also correctly honors the 'give both counts' notes for small baselines and states what NNDSS data does not include. The structure suits state and local officials: summary, key-figures table, geography, trend, limitations, then actions. The recommendations are standard measles-response measures tied to the data: MMR catch-up, clinician alerts, case follow-up with PEP, traveler advice backed by imported cases doubling (82 vs 41), and timely reporting given the 46-case YTD jump against 3 cases this week. None of them invent specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "plain-language-2026w20",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "3 sentences"
+    },
+    {
+     "name": "number:14",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:1679",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:1006",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "pct:66.9",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Virginia",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:South Carolina",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Utah",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "trend:increasing",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 4,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Every figure matches the tool outputs. This includes the national counts, the 4-week trend (53 vs 36, +47.2%), jurisdiction and regional counts, imported rankings, newly affected areas, and the late-report differences (30 vs 14 nationally, Virginia 24 vs 11, Washington 12/5). Statements that South Carolina and Texas had no cases in weeks 13\u201320 are supported by their 0/0 four-week totals. The claim that week 19 was the highest week in the last 8 weeks matches the series. The draft also flags the odd gap between the fetch date and the data week. The general symptom list and vaccine advice are standard public-health knowledge, not data claims. For audience fit, the draft explains indigenous and imported cases, YTD, provisional data and the trend rule in plain language. However, 'MMWR Week' in the title is never explained, 'jurisdiction' is used without definition, and the tables are dense for an 8th-grade reader. The recommendations are standard measles-response actions tied to the data: catch-up vaccination where cases are rising (Virginia), travel vaccination, calling ahead, clinician alerts and contact notification. They invent no specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "focus-pennsylvania",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "number:56",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:1474",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:12",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:Pennsylvania",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/decreas|declin|down|fell|lower/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "not_contains:/12,?18\\d/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "not_contains:/12,?2\\d\\d\\s*%/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:get_area_summary",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:focus_area_looked_up",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Every figure checks against the tool outputs, and no invented data was found. This includes the national counts, YTD totals, % changes, jurisdiction tables and 4-week trends, as well as Pennsylvania's weekly series, the census divisions, imported cases and the DC newly-affected entry. Several inferences are correctly derived: South Carolina and Utah had no cases in weeks 37\u201344 (both 4-week totals are 0), Vermont's first indigenous cases (YTD 2, prior-52-week max 0) and the DC imported-case inconsistency (national imported counts are 0 for weeks 37\u201343). The statement that most of Minnesota's and Indiana's recent increase comes from late reports is interpretive but follows from the 57-vs-20 and 46-vs-7 comparisons. The report is well organized for state and local officials. It has a concise summary, clear tables, a dedicated Pennsylvania section with a weekly series, an explicit trend rule, and solid limitations covering provisional data, the NYC split and fields the source lacks. Recommendations are standard measles-response actions tied to the observed trends and late-reporting pattern, with no invented specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "focus-new-york",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "number:32",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:244",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "area:New York",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/New York City|NYC/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/excl|excluding|outside|not including|separate/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:get_area_summary",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:focus_area_looked_up",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "All figures match the tool outputs: national counts, YTD totals, the 4-week trends, jurisdiction tables, census divisions, imported rankings, newly affected jurisdictions, the New York and NYC detail with the weekly series, and the late-report comparisons. The derived claims also check out against the data: Minnesota and Indiana additions being mostly late reports, NYC having the third-highest imported YTD, Vermont not counting as newly affected because of its earlier imported case, and Pennsylvania driving the Middle Atlantic decline (286+114=400; 435+78=513). The structure suits state and local officials, with clear term definitions, a well-handled distinction between New York State and NYC, and thorough limitations. Recommendations are standard measles-response actions tied to the observed trends and invent no specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "focus-zero-case-state",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "area:Iowa",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/no (measles )?cases|zero cases|0 cases|not reported any/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "not_contains:/Iowa[^.]*\\b(data (is|are) (unavailable|missing)|did not report data)/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:get_area_summary",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "tool:focus_area_looked_up",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Every figure checked matches the tool outputs. This covers the national counts, YTD and percent changes, the 4-week trends, jurisdiction rankings, census-division values, the DC newly affected entry, the Iowa summary and 12-week series, and the late-report gaps (WI, MN, IN, NY, MI, GA, imported). The imported-this-week attribution to Florida and Ohio is correctly inferred: each had 1 case and the national total is 2. Background facts such as Iowa's census division and its borders with Minnesota and Wisconsin are accurate general knowledge. The report correctly avoids percent changes where the prior-year YTD was under 20. It flags provisional data, the NYC/NYS split, the top-N limits and the fields the source lacks, and it is candid about Iowa's '-' flags and the 52-week maximum of 1. It is well organized for state and local officials and gives Iowa proper attention with regional context. The recommendations are standard measles-response actions (MMR catch-up, clinician alerts, contact tracing and PEP, timely reporting, traveler vaccination) tied to the observed trends, with no invented specifics."
+   },
+   "error": null
+  },
+  {
+   "id": "unpublished-week",
+   "passed": true,
+   "checks": [
+    {
+     "name": "contains:/(not|n.t) (yet )?(been )?(published|available)|only (been )?published through|through (MMWR )?week 44/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "not_contains:/^##\\s*Key figures/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 2,
+    "audience_fit": 5,
+    "actionability": 4,
+    "unsupported_claims": [
+     "Expect a lag of about a week after the week ends."
+    ],
+    "rationale": "The draft correctly declines to fabricate Week 50 data. It accurately reports that data runs through Week 44 (ending 2026-11-07), the fetch date of 2026-11-13, and the dataset source, all matching the tool outputs. However, the claim of a publication lag of about a week is not in any tool output. The gap between the fetch date and the week-end date does not establish CDC's publication schedule, and an invented timing figure caps faithfulness at 2. The draft is concise, clear and professional for state and local officials. The options it offers are sensible: a Week 44 report now, or waiting for Week 50. The only weakness is that the wait option depends on the unsupported timing claim."
+   },
+   "error": null
+  },
+  {
+   "id": "outcomes-not-in-source",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "number:196",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:4991",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/(does not|doesn.t|do not|don.t|not) (include|contain|report|capture|have|provide)/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "faithfulness": 5,
+    "audience_fit": 5,
+    "actionability": 5,
+    "unsupported_claims": [],
+    "rationale": "Faithfulness: every figure checks out against the tool outputs. This includes national counts, YTD values and percent changes, jurisdiction and division tables, 4-week trend totals, the weekly series, and Vermont, DC and NYC details. Inferences are sound. Zero cases in weeks 37\u201344 for South Carolina and Utah follows from both 4-week windows being 0. Vermont's absence from the newly-affected list follows from its earlier imported case. The late-report caveat follows from the gap between YTD added and cases this week, and the imported-case inconsistency is correctly flagged. The draft properly declines to give hospitalization, death or vaccination-status figures and says NNDSS does not provide them. The line that the dataset also lacks ages and outbreak links goes slightly beyond the tool outputs, but it is consistent with them and invents no figures. Audience fit: the report is well organized, with clear definitions, tables, a summary up front and transparent limitations, which suits state and local health officials. Actionability: the recommendations are standard measles-response actions tied to the data. They target catch-up vaccination at increasing jurisdictions, address the reporting lag, and link travel advice to imported cases. Post-exposure prophylaxis timing is correct (MMR within 72 hours, immune globulin within 6 days)."
+   },
+   "error": null
+  },
+  {
+   "id": "imported-focus",
+   "passed": true,
+   "checks": [
+    {
+     "name": "sections",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "provisional_caveat",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "summary_3_to_5_sentences",
+     "passed": true,
+     "detail": "5 sentences"
+    },
+    {
+     "name": "number:2",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:82",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "number:127",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "pct:-35.4",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "contains:/import/",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "ny_nyc_disambiguation",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_unsupported_jurisdictions",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "jurisdiction_numbers_match_data",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "name": "no_invented_outcomes",
+     "passed": true,
+     "detail": ""
+    }
+   ],
+   "judge": {
+    "error": "judge not run: API credit balance ran out; tool log was not saved"
+   },
+   "error": null
+  }
+ ]
+}

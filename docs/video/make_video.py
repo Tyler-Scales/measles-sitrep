@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "docs" / "video" / "build"
 OUT = ROOT / "docs" / "walkthrough.mp4"
 W, H = 1920, 1080
-VOICE, RATE = "Samantha", 185
+VOICE, RATE = "Samantha", 198
 
 BG, PANEL, INK, MUTED = (14, 20, 34), (8, 11, 18), (236, 239, 244), (148, 160, 180)
 ACCENT, GREEN, AMBER, BLUE = (230, 75, 75), (110, 200, 140), (240, 190, 90), (110, 160, 240)
@@ -125,9 +125,16 @@ def table(d, x, y, rows, widths, size=30, row_h=74):
 
 
 # ---- slides ---------------------------------------------------------------------------------------
+def latest_run() -> dict | None:
+    runs = sorted((ROOT / "evals" / "results").glob("*.json"))
+    return json.loads(runs[-1].read_text()) if runs else None
+
+
 def slides() -> list[tuple[Image.Image, str]]:
-    total = 9
+    total = 10
     out = []
+    counter = iter(range(2, total + 1))
+    step = lambda: next(counter)  # noqa: E731
 
     # 1. Title
     img = Image.new("RGB", (W, H), BG)
@@ -141,7 +148,7 @@ def slides() -> list[tuple[Image.Image, str]]:
                      "draft public-health situation report, with an eval set to check it."))
 
     # 2. Architecture
-    img, d = canvas("How it works", 2, total)
+    img, d = canvas("How it works", step(), total)
     box(d, (110, 260, 520, 420), "data.cdc.gov", "NNDSS weekly table")
     box(d, (640, 260, 1050, 420), "Snapshots", "frozen JSON per week")
     box(d, (1170, 260, 1810, 420), "analysis.py", "every number computed here", GREEN)
@@ -170,7 +177,7 @@ def slides() -> list[tuple[Image.Image, str]]:
              f"  Imported this week / YTD     {imp['cases_this_week']:>6,} / {imp['ytd']}",
              f"  4-week trend                 {tr['direction']}  ({tr['recent_4wk_cases']} vs {tr['prior_4wk_cases']})", "",
              "  Top this week:  " + ", ".join(f"{t['area']} {t['cases_this_week']}" for t in top[:4])]
-    img, d = canvas("What the agent sees", 3, total)
+    img, d = canvas("What the agent sees", step(), total)
     terminal(d, 96, 190, W - 192, 640, lines, size=30)
     d.text((96, 900), "Summarized from the real JSON output. No API key needed for this step.", font=font(32), fill=MUTED)
     out.append((img, f"For week {n['mmwr_week']} of {n['mmwr_year']}, the agent sees "
@@ -178,13 +185,42 @@ def slides() -> list[tuple[Image.Image, str]]:
                      f"up about {round(ind['ytd_pct_change_vs_last_year'])} percent, with a "
                      f"{tr['direction']} trend. {top[0]['area']} and {top[1]['area']} lead this week."))
 
-    # 4. Agent code
+    # 4. A real draft (committed example from a live run)
+    md = (ROOT / "docs/examples/sitrep-2026-w44.md").read_text()
+    summary = re.search(r"## Summary\s*\n(.*?)\n## ", md, re.S).group(1).strip().replace("**", "")
+    kf = re.search(r"## Key figures\s*\n(.*?)\n\n", md, re.S).group(1).strip().splitlines()
+    rows = [[c.strip().replace("**", "") for c in r.strip("|").split("|")] for r in kf if not set(r) <= set("|-: ")]
+    img, d = canvas("A real draft from Claude", step(), total)
+    d.rounded_rectangle([96, 170, W - 96, 920], radius=18, fill=(246, 244, 239))
+    paper, ink2 = (246, 244, 239), (30, 34, 44)
+    title = md.splitlines()[0].lstrip("# ").strip()
+    d.text((140, 215), title, font=font(36, bold=True), fill=ink2)
+    d.text((140, 285), "Summary", font=font(30, bold=True), fill=ACCENT)
+    y = 330
+    for line in textwrap.wrap(summary, 105):
+        d.text((140, y), line, font=font(27), fill=ink2); y += 38
+    y += 30
+    d.text((140, y), "Key figures", font=font(30, bold=True), fill=ACCENT); y += 50
+    widths = [620, 420, 420]
+    for r, row in enumerate(rows[:6]):
+        x = 140
+        if r == 0:
+            d.rectangle([130, y - 6, 130 + sum(widths), y + 40], fill=(226, 222, 212))
+        for c, cell in enumerate(row[:3]):
+            d.text((x, y), cell[:44], font=font(26, bold=(r == 0)), fill=ink2); x += widths[c]
+        y += 48
+    d.text((96, 945), "docs/examples/sitrep-2026-w44.md  ·  Claude Opus 5.5, live run", font=font(26), fill=MUTED)
+    out.append((img, "Here's a real draft Claude wrote for that week. The summary is short, the key "
+                     "figures match the data exactly, and the full report explains that late reports "
+                     "pushed the year-to-date total up by more than this week's count."))
+
+    # 5. Agent code
     src = (ROOT / "src/measles_sitrep/agent.py").read_text().splitlines()
     start = next(i for i, l in enumerate(src) if "tool_runner(" in l)
     end = next(i for i in range(start, len(src)) if src[i].strip() == ")")
     code = ["# src/measles_sitrep/agent.py"] + [
         l[4:].split("  #")[0].rstrip() for l in src[start: end + 1] if not l.strip().startswith("#")]
-    img, d = canvas("The agent", 4, total)
+    img, d = canvas("The agent", step(), total)
     terminal(d, 96, 190, 1100, 720, code, size=25, title="agent.py")
     bullets(d, ["SDK tool runner runs the loop", "Adaptive thinking, effort high",
                 "Prompt caching on the system prompt and tools", "Server-side refusal fallbacks",
@@ -193,8 +229,8 @@ def slides() -> list[tuple[Image.Image, str]]:
                      "and refusal fallbacks. The prompt fixes the sections and data rules. Claude never does "
                      "arithmetic itself."))
 
-    # 5. Traps
-    img, d = canvas("NNDSS traps, each with a test", 5, total)
+    # 6. Traps
+    img, d = canvas("NNDSS traps, each with a test", step(), total)
     table(d, 96, 200, [
         ["Trap", "Handling"],
         ["\"New York\" excludes New York City", "Prompt rule plus a check on every eval case"],
@@ -207,20 +243,19 @@ def slides() -> list[tuple[Image.Image, str]]:
                      "reports. Tiny bases give absurd percent changes. And there's no hospitalization or death "
                      "data. Each trap has a rule and an eval case."))
 
-    # 6. Eval cases (real ids from cases.yaml)
+    # 7. Eval cases (real ids from cases.yaml)
     import yaml
     cases = yaml.safe_load((ROOT / "evals/cases.yaml").read_text())["cases"]
     lines = ["# case id                    snapshot         focus", ""] + [
         f"  {c['id']:<28} {c['snapshot']:<16} {('focus: ' + c['focus']) if c.get('focus') else ''}"
         for c in cases]
-    img, d = canvas(f"Eval set: {len(cases)} cases, 4 frozen snapshots", 6, total)
+    img, d = canvas(f"Eval set: {len(cases)} cases, 4 frozen snapshots", step(), total)
     terminal(d, 96, 190, W - 192, 740, lines, size=30, title="evals/cases.yaml")
     out.append((img, f"{len(cases)} eval cases span four snapshots, from the early 2025 Texas outbreak to this "
-                     "month: plain language for the public, single states, an unpublished week, and a request "
-                     "for data the source lacks."))
+                     "month, including plain language, single states, an unpublished week, and missing data."))
 
-    # 7. Graders
-    img, d = canvas("Grading", 7, total)
+    # 8. Graders
+    img, d = canvas("Grading", step(), total)
     d.text((96, 200), "Deterministic checks (every case)", font=font(40, bold=True), fill=AMBER)
     bullets(d, ["Required sections and a provisional-data caveat",
                 "Exact numbers and % changes, in any common format",
@@ -235,22 +270,31 @@ def slides() -> list[tuple[Image.Image, str]]:
                      "its real data, with no invented outcomes. An optional Claude judge scores faithfulness "
                      "against the tool outputs."))
 
-    # 8. Tests (real output)
-    py = run("uv run pytest -v 2>&1").splitlines()
-    picked = [l.split("::")[-1] for l in py if "PASSED" in l]
-    summary = next((l.strip("= ") for l in reversed(py) if "passed" in l), "")
-    shown = ["$ uv run pytest -v", ""] + [f"  PASSED  {p.replace(' PASSED', '').split(' [')[0]}" for p in picked[-15:]] + ["", f"  {summary}"]
-    img, d = canvas("Offline test suite", 8, total)
-    terminal(d, 96, 190, W - 192, 760, shown, size=27)
-    n_tests = re.search(r"(\d+) passed", summary).group(1) if summary else "all"
-    out.append((img, f"{n_tests} offline tests cover parsing, totals, the graders, and the full tool loop "
-                     "against a mock A P I."))
+    # 9. Live eval results
+    res = latest_run()
+    img, d = canvas("Live eval results", step(), total)
+    rows = [["Case", "Result", "Checks", "Judge (F / A / R)"]]
+    fs = []
+    for r in res["results"]:
+        ok = sum(c["passed"] for c in r["checks"])
+        j = r.get("judge") or {}
+        if "faithfulness" in j:
+            fs.append(j["faithfulness"])
+        rows.append([r["id"], "PASS" if r["passed"] else "FAIL", f"{ok}/{len(r['checks'])}",
+                     f"{j['faithfulness']} / {j['audience_fit']} / {j['actionability']}" if "faithfulness" in j else "-"])
+    table(d, 96, 170, rows, [760, 260, 260, 448], size=28, row_h=66)
+    favg = sum(fs) / len(fs) if fs else 0
+    d.text((96, 925), f"{res['cases_passed']}/{res['cases']} cases · {res['checks_passed']}/{res['checks']} checks · "
+           f"judge: F faithfulness, A audience fit, R actionability (1-5)", font=font(28), fill=MUTED)
+    out.append((img, f"On the live run, {res['cases_passed']} of {res['cases']} cases passed every check, "
+                     f"{res['checks_passed']} of {res['checks']} checks in all. The judge scored {len(fs)} drafts, "
+                     f"averaging {favg:.1f} out of 5 for faithfulness."))
 
-    # 9. Run it
-    img, d = canvas("Run it", 9, total)
+    # 10. Run it
+    img, d = canvas("Run it", step(), total)
     terminal(d, 96, 190, W - 192, 520, [
         "$ uv sync",
-        "$ export ANTHROPIC_API_KEY=sk-ant-...",
+        "$ ant auth login                              # or export ANTHROPIC_API_KEY",
         "$ uv run sitrep draft                         # latest week from data.cdc.gov",
         "$ uv run sitrep draft --focus Pennsylvania --audience \"state epidemiologists\"",
         "$ uv run python evals/run_evals.py --judge    # scorecard",
@@ -258,8 +302,8 @@ def slides() -> list[tuple[Image.Image, str]]:
     d.text((96, 790), "Drafts are for an epidemiologist to review before release.", font=font(38), fill=INK)
     d.text((96, 850), "Data: CDC NNDSS Weekly Data (data.cdc.gov/d/x9gk-5huc), provisional counts.",
            font=font(30), fill=MUTED)
-    out.append((img, "To run it: u v sync, set your A P I key, then run sitrep draft, or run evals for the "
-                     "scorecard. An epidemiologist should review every draft."))
+    out.append((img, "To run it: u v sync, sign in with ant auth login, then run sitrep draft, or run evals for "
+                     "the scorecard. Offline tests need no key. An epidemiologist should review every draft."))
     return out
 
 

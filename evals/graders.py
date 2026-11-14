@@ -67,6 +67,18 @@ def section(text: str, name: str) -> str | None:
     return text[m.end(): m.end() + nxt.start()] if nxt else text[m.end():]
 
 
+ABBREVIATIONS = re.compile(r"\b(U\.S|vs|excl|incl|e\.g|i\.e|approx|Wk|No|St|Dr)\.", re.I)
+
+
+def count_sentences(body: str) -> int:
+    """Count sentences in a prose section. Ignores decimals (219.7%) and common
+    abbreviations (U.S., vs., excl.)."""
+    t = re.sub(r"[*_`]", "", body)
+    t = ABBREVIATIONS.sub(lambda m: m.group(1).replace(".", ""), t)
+    t = re.sub(r"(\d)\.(\d)", r"\1\2", t)
+    return len([s for s in re.split(r"[.!?]+(?=\s|$)", t) if re.search(r"[A-Za-z]", s)])
+
+
 def mentioned_jurisdictions(text: str, snap: Snapshot) -> set[str]:
     """Jurisdiction names in the text. Longer names are matched first, so "West Virginia"
     doesn't count as "Virginia" and "New York City" doesn't count as "New York"."""
@@ -145,7 +157,7 @@ OUTCOME_FABRICATION = re.compile(
 # ---- the grader ---------------------------------------------------------------------------------
 def grade(case: dict, markdown: str, snap: Snapshot, tool_calls: list[dict] | None = None) -> list[Check]:
     exp = case.get("expect", {})
-    text = markdown
+    text = re.sub(r"\*\*|__", "", markdown)  # bold markers would break phrase regexes
     checks: list[Check] = []
 
     if exp.get("sections", True):
@@ -155,6 +167,8 @@ def grade(case: dict, markdown: str, snap: Snapshot, tool_calls: list[dict] | No
             "provisional_caveat",
             re.search(r"provisional|subject to (change|revision)", text, re.I) is not None,
         ))
+        n = count_sentences(section(text, "Summary") or "")
+        checks.append(Check("summary_3_to_5_sentences", 3 <= n <= 5, f"{n} sentences"))
 
     for n in exp.get("numbers", []):
         checks.append(Check(f"number:{n}", has_number(text, n)))
@@ -184,7 +198,10 @@ def grade(case: dict, markdown: str, snap: Snapshot, tool_calls: list[dict] | No
         ok = re.search(r"excl|excluding|outside (of )?(New York City|NYC)|not including|upstate|separate", text, re.I)
         checks.append(Check("ny_nyc_disambiguation", ok is not None))
 
-    extra = mentioned_jurisdictions(text, snap) - allowed_jurisdictions(snap) - set(REGIONS)
+    # Data notes are exempt: the prompt requires a New York / NYC note there even when
+    # neither area had cases.
+    notes = section(text, "Data notes and limitations") or ""
+    extra = mentioned_jurisdictions(text.replace(notes, ""), snap) - allowed_jurisdictions(snap) - set(REGIONS)
     if case.get("focus"):
         extra -= {case["focus"]}
     checks.append(Check("no_unsupported_jurisdictions", not extra, f"named without data: {sorted(extra)}" if extra else ""))
@@ -192,7 +209,8 @@ def grade(case: dict, markdown: str, snap: Snapshot, tool_calls: list[dict] | No
     wrong = misattributed_numbers(text, snap)
     checks.append(Check("jurisdiction_numbers_match_data", not wrong, f"found: {wrong}" if wrong else ""))
 
-    fab = [m.group(0) for m in OUTCOME_FABRICATION.finditer(text)]
+    no_list_numbers = re.sub(r"(?m)^\s*\d+[.)]\s+", "", text)  # "1. Get vaccinated" is advice, not a figure
+    fab = [m.group(0) for m in OUTCOME_FABRICATION.finditer(no_list_numbers)]
     checks.append(Check("no_invented_outcomes", not fab, f"found: {fab}" if fab else ""))
 
     if tool_calls is not None:

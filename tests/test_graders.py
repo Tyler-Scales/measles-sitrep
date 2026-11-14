@@ -55,6 +55,8 @@ def test_misattributed_number(case, snap):
 def test_invented_outcomes(case, snap):
     bad = GOOD.replace("## Trend", "There were 12 hospitalizations and 1 death.\n\n## Trend")
     assert "no_invented_outcomes" in failed(grade(case, bad, snap))
+    advice = GOOD.replace("- Promote MMR", "1. **Get vaccinated.** Promote MMR")
+    assert "no_invented_outcomes" not in failed(grade(case, advice, snap))
 
 
 def test_ny_without_disambiguation(case, snap):
@@ -71,6 +73,14 @@ def test_wrong_trend_and_missing_section(case, snap):
 def test_tool_check(case, snap):
     f = failed(grade(case, GOOD, snap, tool_calls=[{"tool": "get_reporting_period", "input": {}}]))
     assert {"tool:get_national_summary", "tool:get_jurisdiction_rankings"} <= f
+
+
+def test_summary_sentence_count(case, snap):
+    from graders import count_sentences, section
+    assert count_sentences(section(GOOD, "Summary")) == 4
+    assert count_sentences("U.S. cases rose 219.7% vs. 2025. New York State (excl. NYC) led.") == 2
+    long = GOOD.replace("reported the most cases this week.", "reported the most cases this week. One. Two. Three.", 1)
+    assert "summary_3_to_5_sentences" in failed(grade(case, long, snap))
 
 
 def test_number_and_pct_matching():

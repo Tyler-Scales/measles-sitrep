@@ -13,7 +13,8 @@ data.cdc.gov (NNDSS x9gk-5huc) ──► snapshot JSON ──► analysis.py (al
                          evals/cases.yaml + graders.py (+ optional LLM judge) ◄┘
 ```
 
-Walkthrough video (2 min): [`docs/walkthrough.mp4`](docs/walkthrough.mp4)
+Walkthrough video (2 min): [`docs/walkthrough.mp4`](docs/walkthrough.mp4) · Example draft:
+[`docs/examples/sitrep-2026-w44.md`](docs/examples/sitrep-2026-w44.md)
 
 ## Why it's built this way
 
@@ -49,11 +50,19 @@ Print the key figures for the latest week. This needs no API key:
 uv run sitrep facts --snapshot data/snapshots/2026-w44.json
 ```
 
-Draft a sitrep with Claude:
+Draft a sitrep with Claude. First sign in, using either the Anthropic CLI
+(`brew install anthropics/tap/ant`, which links usage to your Console account with no key
+to manage) or an API key:
+
+```bash
+ant auth login
+```
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
+
+Then:
 
 ```bash
 uv run sitrep draft --snapshot data/snapshots/2026-w44.json
@@ -115,7 +124,7 @@ actionability. The third re-grades saved drafts without calling the API.
 
 **Deterministic graders** (`evals/graders.py`) run on every case:
 
-- the required sections and a provisional-data caveat
+- the required sections, a provisional-data caveat, and a Summary of 3 to 5 sentences
 - the expected numbers and % changes (accepts `4991`, `4,991`, `220%`, `219.7%`, or `3.2 times`)
 - the expected jurisdictions, and the trend word inside the `## Trend` section
 - every "State (N)" or "State reported N" figure matches one of that state's real numbers
@@ -131,13 +140,42 @@ checks them against the snapshots.
 **LLM judge** (optional): it sees the exact tool outputs the agent saw, so it can check
 faithfulness claim by claim. It returns structured JSON (`output_config.format`).
 
+### Latest results
+
+Results from a live run on 2026-11-13 (Claude Opus 5.5, effort `high`), stored in
+[`evals/results/2026-11-13-opus-5-5.json`](evals/results/2026-11-13-opus-5-5.json):
+
+| Case | Checks | Judge (faithfulness / audience fit / actionability) |
+|---|---|---|
+| national-latest | 19/19 | 5 / 5 / 5 |
+| emerging-outbreak-2025w10 | 14/14 | 5 / 5 / 5 |
+| quiet-week-2025w30 | 15/15 | 5 / 5 / 5 |
+| plain-language-2026w20 | 15/15 | 5 / 4 / 5 |
+| focus-pennsylvania | 16/16 | 5 / 5 / 5 |
+| focus-new-york | 14/14 | 5 / 5 / 5 |
+| focus-zero-case-state | 12/12 | 5 / 5 / 5 |
+| unpublished-week | 5/5 | 2 / 5 / 4 |
+| outcomes-not-in-source | 10/10 | 5 / 5 / 5 |
+| imported-focus | 12/12 | not judged |
+
+All 10 cases pass their deterministic checks (132/132). Two gaps:
+
+- **unpublished-week, faithfulness 2.** The draft guessed CDC's publication lag ("about a
+  week"), which the tools don't say. The prompt now forbids guessing publication timing or
+  source facts, but this fix hasn't been tested in a live run yet.
+- **imported-focus, not judged.** The account's API credit ran out before its judge call.
+
+Earlier runs on this prompt found, and the current version fixed, Summaries over 5
+sentences, a claim that unlisted jurisdictions had no cases, and guesses about how the
+"newly affected" tool works.
+
 ## Tests
 
 ```bash
 uv run pytest
 ```
 
-These 41 tests need no network or API key. They check:
+These 42 tests need no network or API key. They check:
 
 - parsing and MMWR week dates
 - that state totals add up to the national total in all four snapshots
@@ -153,7 +191,8 @@ src/measles_sitrep/   nndss.py (fetch/parse/snapshot) · analysis.py · tools.py
 data/snapshots/       frozen NNDSS measles rows (2025-w10, 2025-w30, 2026-w20, 2026-w44)
 evals/                cases.yaml · graders.py · run_evals.py
 tests/                pytest suite (offline)
-docs/                 walkthrough.mp4 and the script that builds it
+docs/                 walkthrough.mp4, its build script, and an example draft
+evals/results/        saved scorecards from live runs
 ```
 
 ## Data and caveats

@@ -236,6 +236,8 @@ def newly_affected(snap: Snapshot, week: int | None = None, lookback: int = 4) -
         if first is not None and first > week - lookback:
             found.append({"area": area, "first_reported_week": first, "ytd_now": total_ytd(week)})
     return {"mmwr_year": snap.year, "mmwr_week": week, "lookback_weeks": lookback,
+            "definition": (f"Jurisdictions whose first measles case of {snap.year}, indigenous or "
+                           f"imported, was reported in weeks {week - lookback + 1}-{week}."),
             "newly_affected": sorted(found, key=lambda x: x["first_reported_week"])}
 
 

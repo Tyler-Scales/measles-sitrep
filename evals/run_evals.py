@@ -55,12 +55,16 @@ def run_case(case: dict, out_dir: Path, args) -> dict:
     checks = grade(case, rec["markdown"], snap, rec["tool_calls"]) if rec["markdown"] else []
     rec["checks"] = [c.__dict__ for c in checks]
     rec["passed"] = bool(checks) and all(c.passed for c in checks)
-    if args.judge and rec["markdown"]:
+    saved.write_text(json.dumps(rec, indent=1))  # save before judging, so a judge failure loses nothing
+    if args.judge and rec["markdown"] and not rec.get("judge"):
         import anthropic
 
-        rec["judge"] = judge(case, rec["request"], rec["markdown"], rec["tool_calls"],
-                             anthropic.Anthropic(), args.judge_model)
-    saved.write_text(json.dumps(rec, indent=1))
+        try:
+            rec["judge"] = judge(case, rec["request"], rec["markdown"], rec["tool_calls"],
+                                 anthropic.Anthropic(), args.judge_model)
+        except anthropic.APIError as e:
+            rec["judge"] = {"error": f"{type(e).__name__}: {e}"[:300]}
+        saved.write_text(json.dumps(rec, indent=1))
     return {"id": case["id"], **rec}
 
 
