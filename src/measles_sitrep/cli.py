@@ -44,10 +44,13 @@ def cmd_facts(args) -> None:
 def cmd_draft(args) -> None:
     from .agent import draft_sitrep
 
+    from .tools import summarize_call
+
     snap = _load_or_fetch(args)
+    trace = (lambda c: print(f"  -> {summarize_call(c)}", file=sys.stderr, flush=True)) if args.verbose else None
     try:
         res = draft_sitrep(snap, week=args.week, audience=args.audience, focus=args.focus,
-                           model=args.model, effort=args.effort)
+                           model=args.model, effort=args.effort, on_tool_call=trace)
     except TypeError as e:
         if "authentication" not in str(e):
             raise
@@ -82,6 +85,7 @@ def main(argv: list[str] | None = None) -> None:
     d.add_argument("--model", default=None)
     d.add_argument("--effort", default=None, choices=["low", "medium", "high", "xhigh", "max"])
     d.add_argument("--out", help="Where to save the Markdown")
+    d.add_argument("-v", "--verbose", action="store_true", help="Print each tool call as it happens")
 
     args = p.parse_args(argv)
     if args.cmd == "draft":

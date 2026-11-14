@@ -13,8 +13,25 @@ data.cdc.gov (NNDSS x9gk-5huc) ──► snapshot JSON ──► analysis.py (al
                          evals/cases.yaml + graders.py (+ optional LLM judge) ◄┘
 ```
 
-Walkthrough video (2 min): [`docs/walkthrough.mp4`](docs/walkthrough.mp4) · Example draft:
-[`docs/examples/sitrep-2026-w44.md`](docs/examples/sitrep-2026-w44.md)
+## What it looks like
+
+All three images come from one live run on the 2026 week-44 data.
+
+**1. The agent gathers figures.** Claude chose these 17 tool calls itself. Each line shows
+the call and a summary of what it returned. `sitrep draft --verbose` prints this as it runs.
+
+![Tool calls from a live run](docs/screenshots/agent-trace.png)
+
+**2. It writes the sitrep.** Below is the top of the draft; the full text is in
+[`docs/examples/sitrep-2026-w44.md`](docs/examples/sitrep-2026-w44.md). Every number traces
+back to a tool call above.
+
+![Rendered sitrep for 2026 week 44](docs/screenshots/sitrep.png)
+
+**3. The evals check it.** Ten cases, graded by deterministic checks plus an LLM judge.
+[Latest results](#latest-results) explains the two amber judge cells.
+
+![Eval scorecard](docs/screenshots/eval-scorecard.png)
 
 ## Why it's built this way
 
@@ -75,7 +92,8 @@ uv run sitrep draft --focus "Pennsylvania" --audience "state epidemiologists"
 ```
 
 Drafts are saved to `reports/sitrep-<year>-w<week>.md`. Other options: `--week`, `--year`,
-`--model` (default `claude-opus-5-5`), and `--effort` (default `high`).
+`--model` (default `claude-opus-5-5`), `--effort` (default `high`), and `--verbose` (print each
+tool call as it happens).
 
 ## The agent
 
@@ -191,7 +209,7 @@ src/measles_sitrep/   nndss.py (fetch/parse/snapshot) · analysis.py · tools.py
 data/snapshots/       frozen NNDSS measles rows (2025-w10, 2025-w30, 2026-w20, 2026-w44)
 evals/                cases.yaml · graders.py · run_evals.py
 tests/                pytest suite (offline)
-docs/                 walkthrough.mp4, its build script, and an example draft
+docs/                 example draft and tool log, README screenshots, and their build script
 evals/results/        saved scorecards from live runs
 ```
 
@@ -202,3 +220,9 @@ The data is CDC's [NNDSS Weekly Data](https://data.cdc.gov/d/x9gk-5huc), labels
 jurisdictions send late reports. NNDSS weekly tables have no hospitalizations, deaths,
 vaccination status, ages, or outbreak links. Drafts are meant for an epidemiologist to
 review before release, not to publish as-is.
+
+To rebuild the README screenshots from the committed example files (needs Google Chrome):
+
+```bash
+uv run python docs/screenshots/make_screenshots.py
+```

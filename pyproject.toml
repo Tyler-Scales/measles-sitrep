@@ -22,8 +22,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "imageio-ffmpeg>=0.8.1",
-    "pillow>=13.0.0",
+    "markdown>=3.11.3",
     "pytest>=9.2.0",
 ]
 

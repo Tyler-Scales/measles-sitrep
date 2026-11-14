@@ -9,7 +9,7 @@ import anthropic
 
 from .nndss import Snapshot
 from .prompts import SYSTEM_PROMPT, user_request
-from .tools import make_tools
+from .tools import ToolLog, make_tools
 
 DEFAULT_MODEL = os.environ.get("SITREP_MODEL", "claude-opus-5-5")
 DEFAULT_EFFORT = os.environ.get("SITREP_EFFORT", "high")
@@ -41,9 +41,11 @@ def draft_sitrep(
     model: str = DEFAULT_MODEL,
     effort: str = DEFAULT_EFFORT,
     client: anthropic.Anthropic | None = None,
+    on_tool_call=None,
 ) -> SitrepResult:
+    """Draft a sitrep. `on_tool_call(call)` is called after each tool call, if given."""
     client = client or anthropic.Anthropic()
-    log: list[dict] = []
+    log = ToolLog(on_tool_call)
     request = user_request(week, snap.year if week else None, audience, focus, extra)
 
     runner = client.beta.messages.tool_runner(
@@ -74,7 +76,7 @@ def draft_sitrep(
         raise SitrepError("The model returned no messages")
     result.stop_reason = last.stop_reason
     result.model = last.model
-    result.tool_calls = log
+    result.tool_calls = list(log)
     if last.stop_reason == "refusal":
         raise SitrepError(f"Request declined: {getattr(last, 'stop_details', None)}")
     if last.stop_reason == "max_tokens":

@@ -40,7 +40,9 @@ def test_tool_loop_end_to_end():
         return httpx2.Response(200, json=turns[len(requests) - 1])
 
     client = anthropic.Anthropic(api_key="test", http_client=httpx2.Client(transport=httpx2.MockTransport(handler)))
-    res = draft_sitrep(SNAP, client=client)
+    seen = []
+    res = draft_sitrep(SNAP, client=client, on_tool_call=seen.append)
+    assert [c["tool"] for c in seen] == ["get_reporting_period", "get_national_summary"]
 
     assert res.markdown == "SCRIPTED TEST DRAFT"
     assert [c["tool"] for c in res.tool_calls] == ["get_reporting_period", "get_national_summary"]

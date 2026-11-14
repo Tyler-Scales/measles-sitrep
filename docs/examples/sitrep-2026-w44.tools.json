@@ -1,0 +1,910 @@
+{
+ "request": "Draft the measles situation report for the latest published week. Audience: state and local public health officials.",
+ "model": "claude-opus-5-5",
+ "tool_calls": [
+  {
+   "tool": "get_reporting_period",
+   "input": {},
+   "output": {
+    "mmwr_year": 2026,
+    "latest_mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "weeks_available": "1-44",
+    "data_fetched_at": "2026-11-13T23:42:04+00:00",
+    "source": "https://data.cdc.gov/d/x9gk-5huc",
+    "dataset": "CDC NNDSS Weekly Data (provisional), labels 'Measles, Indigenous' and 'Measles, Imported'"
+   }
+  },
+  {
+   "tool": "get_national_summary",
+   "input": {
+    "week": null
+   },
+   "output": {
+    "area": "U.S. Residents",
+    "area_type": "aggregate",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 196,
+     "cases_this_week_flag": null,
+     "ytd": 4991,
+     "ytd_same_week_last_year": 1561,
+     "ytd_pct_change_vs_last_year": 219.7,
+     "ytd_comparison_note": null,
+     "max_weekly_cases_prior_52_weeks": 289,
+     "ytd_added_since_last_week": 363
+    },
+    "imported": {
+     "cases_this_week": 2,
+     "cases_this_week_flag": null,
+     "ytd": 82,
+     "ytd_same_week_last_year": 127,
+     "ytd_pct_change_vs_last_year": -35.4,
+     "ytd_comparison_note": null,
+     "max_weekly_cases_prior_52_weeks": 8,
+     "ytd_added_since_last_week": 5
+    },
+    "total_ytd_all_measles": 5073,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 614,
+     "prior_4wk_cases": 637,
+     "pct_change": -3.6,
+     "direction": "stable",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_jurisdiction_rankings",
+   "input": {
+    "week": null,
+    "label": "indigenous",
+    "sort_by": "cases_this_week",
+    "top_n": 10
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "indigenous",
+    "sorted_by": "cases_this_week",
+    "jurisdictions_with_cases_this_week": 12,
+    "jurisdictions_with_cases_ytd": 39,
+    "top": [
+     {
+      "area": "Wisconsin",
+      "cases_this_week": 58,
+      "ytd": 395,
+      "ytd_same_week_last_year": 36,
+      "ytd_added_since_last_week": 130,
+      "share_of_national_ytd_pct": 7.9
+     },
+     {
+      "area": "Pennsylvania",
+      "cases_this_week": 56,
+      "ytd": 1474,
+      "ytd_same_week_last_year": 12,
+      "ytd_added_since_last_week": 58,
+      "share_of_national_ytd_pct": 29.5
+     },
+     {
+      "area": "New York",
+      "cases_this_week": 32,
+      "ytd": 244,
+      "ytd_same_week_last_year": 0,
+      "ytd_added_since_last_week": 37,
+      "share_of_national_ytd_pct": 4.9
+     },
+     {
+      "area": "Minnesota",
+      "cases_this_week": 20,
+      "ytd": 135,
+      "ytd_same_week_last_year": 18,
+      "ytd_added_since_last_week": 57,
+      "share_of_national_ytd_pct": 2.7
+     },
+     {
+      "area": "Ohio",
+      "cases_this_week": 9,
+      "ytd": 208,
+      "ytd_same_week_last_year": 32,
+      "ytd_added_since_last_week": 9,
+      "share_of_national_ytd_pct": 4.2
+     },
+     {
+      "area": "Indiana",
+      "cases_this_week": 7,
+      "ytd": 129,
+      "ytd_same_week_last_year": 10,
+      "ytd_added_since_last_week": 46,
+      "share_of_national_ytd_pct": 2.6
+     },
+     {
+      "area": "Virginia",
+      "cases_this_week": 5,
+      "ytd": 180,
+      "ytd_same_week_last_year": 1,
+      "ytd_added_since_last_week": 5,
+      "share_of_national_ytd_pct": 3.6
+     },
+     {
+      "area": "Michigan",
+      "cases_this_week": 3,
+      "ytd": 22,
+      "ytd_same_week_last_year": 21,
+      "ytd_added_since_last_week": 6,
+      "share_of_national_ytd_pct": 0.4
+     },
+     {
+      "area": "Montana",
+      "cases_this_week": 2,
+      "ytd": 8,
+      "ytd_same_week_last_year": 26,
+      "ytd_added_since_last_week": 2,
+      "share_of_national_ytd_pct": 0.2
+     },
+     {
+      "area": "Vermont",
+      "cases_this_week": 2,
+      "ytd": 2,
+      "ytd_same_week_last_year": 0,
+      "ytd_added_since_last_week": 2,
+      "share_of_national_ytd_pct": 0.0
+     }
+    ],
+    "national_ytd": 4991,
+    "note": "New York means New York State excluding New York City; NNDSS reports NYC separately."
+   }
+  },
+  {
+   "tool": "get_jurisdiction_rankings",
+   "input": {
+    "week": null,
+    "label": "indigenous",
+    "sort_by": "ytd",
+    "top_n": 10
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "indigenous",
+    "sorted_by": "ytd",
+    "jurisdictions_with_cases_this_week": 12,
+    "jurisdictions_with_cases_ytd": 39,
+    "top": [
+     {
+      "area": "Pennsylvania",
+      "cases_this_week": 56,
+      "ytd": 1474,
+      "ytd_same_week_last_year": 12,
+      "ytd_added_since_last_week": 58,
+      "share_of_national_ytd_pct": 29.5
+     },
+     {
+      "area": "South Carolina",
+      "cases_this_week": 0,
+      "ytd": 686,
+      "ytd_same_week_last_year": 43,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 13.7
+     },
+     {
+      "area": "Utah",
+      "cases_this_week": 0,
+      "ytd": 532,
+      "ytd_same_week_last_year": 77,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 10.7
+     },
+     {
+      "area": "Wisconsin",
+      "cases_this_week": 58,
+      "ytd": 395,
+      "ytd_same_week_last_year": 36,
+      "ytd_added_since_last_week": 130,
+      "share_of_national_ytd_pct": 7.9
+     },
+     {
+      "area": "New York",
+      "cases_this_week": 32,
+      "ytd": 244,
+      "ytd_same_week_last_year": 0,
+      "ytd_added_since_last_week": 37,
+      "share_of_national_ytd_pct": 4.9
+     },
+     {
+      "area": "Ohio",
+      "cases_this_week": 9,
+      "ytd": 208,
+      "ytd_same_week_last_year": 32,
+      "ytd_added_since_last_week": 9,
+      "share_of_national_ytd_pct": 4.2
+     },
+     {
+      "area": "Kentucky",
+      "cases_this_week": 1,
+      "ytd": 207,
+      "ytd_same_week_last_year": 7,
+      "ytd_added_since_last_week": 3,
+      "share_of_national_ytd_pct": 4.1
+     },
+     {
+      "area": "Virginia",
+      "cases_this_week": 5,
+      "ytd": 180,
+      "ytd_same_week_last_year": 1,
+      "ytd_added_since_last_week": 5,
+      "share_of_national_ytd_pct": 3.6
+     },
+     {
+      "area": "Texas",
+      "cases_this_week": 0,
+      "ytd": 170,
+      "ytd_same_week_last_year": 787,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 3.4
+     },
+     {
+      "area": "Florida",
+      "cases_this_week": 0,
+      "ytd": 142,
+      "ytd_same_week_last_year": 4,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 2.8
+     }
+    ],
+    "national_ytd": 4991,
+    "note": "New York means New York State excluding New York City; NNDSS reports NYC separately."
+   }
+  },
+  {
+   "tool": "get_jurisdiction_rankings",
+   "input": {
+    "week": null,
+    "label": "indigenous",
+    "sort_by": "ytd_added_since_last_week",
+    "top_n": 10
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "indigenous",
+    "sorted_by": "ytd_added_since_last_week",
+    "jurisdictions_with_cases_this_week": 12,
+    "jurisdictions_with_cases_ytd": 39,
+    "top": [
+     {
+      "area": "Wisconsin",
+      "cases_this_week": 58,
+      "ytd": 395,
+      "ytd_same_week_last_year": 36,
+      "ytd_added_since_last_week": 130,
+      "share_of_national_ytd_pct": 7.9
+     },
+     {
+      "area": "Pennsylvania",
+      "cases_this_week": 56,
+      "ytd": 1474,
+      "ytd_same_week_last_year": 12,
+      "ytd_added_since_last_week": 58,
+      "share_of_national_ytd_pct": 29.5
+     },
+     {
+      "area": "Minnesota",
+      "cases_this_week": 20,
+      "ytd": 135,
+      "ytd_same_week_last_year": 18,
+      "ytd_added_since_last_week": 57,
+      "share_of_national_ytd_pct": 2.7
+     },
+     {
+      "area": "Indiana",
+      "cases_this_week": 7,
+      "ytd": 129,
+      "ytd_same_week_last_year": 10,
+      "ytd_added_since_last_week": 46,
+      "share_of_national_ytd_pct": 2.6
+     },
+     {
+      "area": "New York",
+      "cases_this_week": 32,
+      "ytd": 244,
+      "ytd_same_week_last_year": 0,
+      "ytd_added_since_last_week": 37,
+      "share_of_national_ytd_pct": 4.9
+     },
+     {
+      "area": "Ohio",
+      "cases_this_week": 9,
+      "ytd": 208,
+      "ytd_same_week_last_year": 32,
+      "ytd_added_since_last_week": 9,
+      "share_of_national_ytd_pct": 4.2
+     },
+     {
+      "area": "Michigan",
+      "cases_this_week": 3,
+      "ytd": 22,
+      "ytd_same_week_last_year": 21,
+      "ytd_added_since_last_week": 6,
+      "share_of_national_ytd_pct": 0.4
+     },
+     {
+      "area": "Georgia",
+      "cases_this_week": 0,
+      "ytd": 13,
+      "ytd_same_week_last_year": 10,
+      "ytd_added_since_last_week": 6,
+      "share_of_national_ytd_pct": 0.3
+     },
+     {
+      "area": "Virginia",
+      "cases_this_week": 5,
+      "ytd": 180,
+      "ytd_same_week_last_year": 1,
+      "ytd_added_since_last_week": 5,
+      "share_of_national_ytd_pct": 3.6
+     },
+     {
+      "area": "Kentucky",
+      "cases_this_week": 1,
+      "ytd": 207,
+      "ytd_same_week_last_year": 7,
+      "ytd_added_since_last_week": 3,
+      "share_of_national_ytd_pct": 4.1
+     }
+    ],
+    "national_ytd": 4991,
+    "note": "New York means New York State excluding New York City; NNDSS reports NYC separately."
+   }
+  },
+  {
+   "tool": "get_regional_breakdown",
+   "input": {
+    "week": null
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "indigenous",
+    "census_divisions": [
+     {
+      "region": "Middle Atlantic",
+      "cases_this_week": 88,
+      "ytd": 1719,
+      "ytd_same_week_last_year": 27,
+      "trend": "decreasing"
+     },
+     {
+      "region": "South Atlantic",
+      "cases_this_week": 6,
+      "ytd": 1102,
+      "ytd_same_week_last_year": 59,
+      "trend": "stable"
+     },
+     {
+      "region": "East North Central",
+      "cases_this_week": 77,
+      "ytd": 757,
+      "ytd_same_week_last_year": 111,
+      "trend": "increasing"
+     },
+     {
+      "region": "Mountain",
+      "cases_this_week": 2,
+      "ytd": 694,
+      "ytd_same_week_last_year": 354,
+      "trend": "increasing"
+     },
+     {
+      "region": "East South Central",
+      "cases_this_week": 1,
+      "ytd": 217,
+      "ytd_same_week_last_year": 13,
+      "trend": "stable"
+     },
+     {
+      "region": "West South Central",
+      "cases_this_week": 0,
+      "ytd": 170,
+      "ytd_same_week_last_year": 813,
+      "trend": "no recent cases"
+     },
+     {
+      "region": "West North Central",
+      "cases_this_week": 20,
+      "ytd": 163,
+      "ytd_same_week_last_year": 168,
+      "trend": "increasing"
+     },
+     {
+      "region": "Pacific",
+      "cases_this_week": 0,
+      "ytd": 160,
+      "ytd_same_week_last_year": 16,
+      "trend": "no recent cases"
+     },
+     {
+      "region": "New England",
+      "cases_this_week": 2,
+      "ytd": 9,
+      "ytd_same_week_last_year": 0,
+      "trend": "increasing"
+     }
+    ]
+   }
+  },
+  {
+   "tool": "get_newly_affected_jurisdictions",
+   "input": {
+    "week": null
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "lookback_weeks": 4,
+    "definition": "Jurisdictions whose first measles case of 2026, indigenous or imported, was reported in weeks 41-44.",
+    "newly_affected": [
+     {
+      "area": "District of Columbia",
+      "first_reported_week": 41,
+      "ytd_now": 1
+     }
+    ]
+   }
+  },
+  {
+   "tool": "get_jurisdiction_rankings",
+   "input": {
+    "week": null,
+    "label": "imported",
+    "sort_by": "ytd",
+    "top_n": 5
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "imported",
+    "sorted_by": "ytd",
+    "jurisdictions_with_cases_this_week": 2,
+    "jurisdictions_with_cases_ytd": 26,
+    "top": [
+     {
+      "area": "California",
+      "cases_this_week": 0,
+      "ytd": 12,
+      "ytd_same_week_last_year": 15,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 14.6
+     },
+     {
+      "area": "Texas",
+      "cases_this_week": 0,
+      "ytd": 8,
+      "ytd_same_week_last_year": 16,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 9.8
+     },
+     {
+      "area": "New York City",
+      "cases_this_week": 0,
+      "ytd": 7,
+      "ytd_same_week_last_year": 10,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 8.5
+     },
+     {
+      "area": "Washington",
+      "cases_this_week": 0,
+      "ytd": 6,
+      "ytd_same_week_last_year": 4,
+      "ytd_added_since_last_week": 0,
+      "share_of_national_ytd_pct": 7.3
+     },
+     {
+      "area": "Florida",
+      "cases_this_week": 1,
+      "ytd": 5,
+      "ytd_same_week_last_year": 2,
+      "ytd_added_since_last_week": 1,
+      "share_of_national_ytd_pct": 6.1
+     }
+    ],
+    "national_ytd": 82,
+    "note": "New York means New York State excluding New York City; NNDSS reports NYC separately."
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "Wisconsin",
+    "week": null
+   },
+   "output": {
+    "area": "Wisconsin",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 58,
+     "cases_this_week_flag": null,
+     "ytd": 395,
+     "ytd_same_week_last_year": 36,
+     "ytd_pct_change_vs_last_year": 997.2,
+     "ytd_comparison_note": null,
+     "max_weekly_cases_prior_52_weeks": 60,
+     "ytd_added_since_last_week": 130
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 2,
+     "ytd_same_week_last_year": 0,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 1,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 397,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 92,
+     "prior_4wk_cases": 30,
+     "pct_change": 206.7,
+     "direction": "increasing",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "Pennsylvania",
+    "week": null
+   },
+   "output": {
+    "area": "Pennsylvania",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 56,
+     "cases_this_week_flag": null,
+     "ytd": 1474,
+     "ytd_same_week_last_year": 12,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 169,
+     "ytd_added_since_last_week": 58
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 2,
+     "ytd_same_week_last_year": 4,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 2,
+     "ytd_added_since_last_week": 2
+    },
+    "total_ytd_all_measles": 1476,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 286,
+     "prior_4wk_cases": 435,
+     "pct_change": -34.3,
+     "direction": "decreasing",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "New York",
+    "week": null
+   },
+   "output": {
+    "area": "New York",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 32,
+     "cases_this_week_flag": null,
+     "ytd": 244,
+     "ytd_same_week_last_year": 0,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 41,
+     "ytd_added_since_last_week": 37
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 2,
+     "ytd_same_week_last_year": 9,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 1,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 246,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 114,
+     "prior_4wk_cases": 78,
+     "pct_change": 46.2,
+     "direction": "increasing",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "Minnesota",
+    "week": null
+   },
+   "output": {
+    "area": "Minnesota",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 20,
+     "cases_this_week_flag": null,
+     "ytd": 135,
+     "ytd_same_week_last_year": 18,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 41,
+     "ytd_added_since_last_week": 57
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 1,
+     "ytd_same_week_last_year": 5,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 1,
+     "ytd_added_since_last_week": 1
+    },
+    "total_ytd_all_measles": 136,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 21,
+     "prior_4wk_cases": 1,
+     "pct_change": 2000.0,
+     "direction": "increasing",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "South Carolina",
+    "week": null
+   },
+   "output": {
+    "area": "South Carolina",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 686,
+     "ytd_same_week_last_year": 43,
+     "ytd_pct_change_vs_last_year": 1495.3,
+     "ytd_comparison_note": null,
+     "max_weekly_cases_prior_52_weeks": 213,
+     "ytd_added_since_last_week": 0
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 0,
+     "ytd_same_week_last_year": 2,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 0,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 686,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 0,
+     "prior_4wk_cases": 0,
+     "pct_change": null,
+     "direction": "no recent cases",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "Utah",
+    "week": null
+   },
+   "output": {
+    "area": "Utah",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 532,
+     "ytd_same_week_last_year": 77,
+     "ytd_pct_change_vs_last_year": 590.9,
+     "ytd_comparison_note": null,
+     "max_weekly_cases_prior_52_weeks": 57,
+     "ytd_added_since_last_week": 0
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 0,
+     "ytd_same_week_last_year": 0,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 0,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 532,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 0,
+     "prior_4wk_cases": 0,
+     "pct_change": null,
+     "direction": "no recent cases",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "District of Columbia",
+    "week": null
+   },
+   "output": {
+    "area": "District of Columbia",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 0,
+     "ytd_same_week_last_year": 0,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 0,
+     "ytd_added_since_last_week": 0
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 1,
+     "ytd_same_week_last_year": 0,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 1,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 1,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 0,
+     "prior_4wk_cases": 0,
+     "pct_change": null,
+     "direction": "no recent cases",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_area_summary",
+   "input": {
+    "area": "Indiana",
+    "week": null
+   },
+   "output": {
+    "area": "Indiana",
+    "area_type": "jurisdiction",
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "week_ending": "2026-11-07",
+    "indigenous": {
+     "cases_this_week": 7,
+     "cases_this_week_flag": null,
+     "ytd": 129,
+     "ytd_same_week_last_year": 10,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 28,
+     "ytd_added_since_last_week": 46
+    },
+    "imported": {
+     "cases_this_week": 0,
+     "cases_this_week_flag": "-",
+     "ytd": 0,
+     "ytd_same_week_last_year": 2,
+     "ytd_pct_change_vs_last_year": null,
+     "ytd_comparison_note": "Last year's YTD was under 20, so give both counts instead of a % change.",
+     "max_weekly_cases_prior_52_weeks": 0,
+     "ytd_added_since_last_week": 0
+    },
+    "total_ytd_all_measles": 129,
+    "trend_indigenous": {
+     "label": "indigenous",
+     "weeks_compared": "weeks 41-44 vs weeks 37-40",
+     "recent_4wk_cases": 11,
+     "prior_4wk_cases": 1,
+     "pct_change": 1000.0,
+     "direction": "increasing",
+     "rule": "increasing/decreasing if the 4-week total changed by more than 20%, otherwise stable"
+    }
+   }
+  },
+  {
+   "tool": "get_jurisdiction_rankings",
+   "input": {
+    "week": null,
+    "label": "imported",
+    "sort_by": "cases_this_week",
+    "top_n": 3
+   },
+   "output": {
+    "mmwr_year": 2026,
+    "mmwr_week": 44,
+    "label": "imported",
+    "sorted_by": "cases_this_week",
+    "jurisdictions_with_cases_this_week": 2,
+    "jurisdictions_with_cases_ytd": 26,
+    "top": [
+     {
+      "area": "Florida",
+      "cases_this_week": 1,
+      "ytd": 5,
+      "ytd_same_week_last_year": 2,
+      "ytd_added_since_last_week": 1,
+      "share_of_national_ytd_pct": 6.1
+     },
+     {
+      "area": "Ohio",
+      "cases_this_week": 1,
+      "ytd": 3,
+      "ytd_same_week_last_year": 7,
+      "ytd_added_since_last_week": 1,
+      "share_of_national_ytd_pct": 3.7
+     }
+    ],
+    "national_ytd": 82,
+    "note": "New York means New York State excluding New York City; NNDSS reports NYC separately."
+   }
+  }
+ ]
+}

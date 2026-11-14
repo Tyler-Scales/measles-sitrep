@@ -15,6 +15,52 @@ from . import analysis
 from .nndss import Snapshot
 
 
+class ToolLog(list):
+    """List of tool calls that can also report each call as it happens (sitrep draft --verbose)."""
+
+    def __init__(self, on_call: Callable[[dict], None] | None = None):
+        super().__init__()
+        self.on_call = on_call
+
+    def append(self, call: dict) -> None:
+        super().append(call)
+        if self.on_call:
+            self.on_call(call)
+
+
+def summarize_call(call: dict) -> str:
+    """One-line summary of a tool call and its result, for logs and screenshots."""
+    name, args, out = call["tool"], call["input"], call["output"]
+    shown = ", ".join(f"{k}={v!r}" for k, v in args.items() if v is not None)
+    head = f"{name}({shown})"
+    if "error" in out:
+        return f"{head}  ->  error: {out['error'][:70]}"
+
+    def fig(block: dict) -> str:
+        pct = block.get("ytd_pct_change_vs_last_year")
+        return (f"{block.get('cases_this_week')} this week, {block.get('ytd'):,} YTD"
+                + (f" ({pct:+.1f}%)" if pct is not None else ""))
+
+    if name == "get_reporting_period":
+        res = f"{out['mmwr_year']} week {out['latest_mmwr_week']}, ending {out['week_ending']}"
+    elif name in ("get_national_summary", "get_area_summary"):
+        res = f"{out['area']}: {fig(out['indigenous'])}, trend {out['trend_indigenous']['direction']}"
+    elif name == "get_jurisdiction_rankings":
+        key = {"cases_this_week": "cases_this_week", "ytd": "ytd",
+               "ytd_added_since_last_week": "ytd_added_since_last_week"}[out["sorted_by"]]
+        res = ", ".join(f"{x['area']} {x[key]:,}" for x in out["top"][:3] if x[key] is not None)
+    elif name == "get_regional_breakdown":
+        top = out["census_divisions"][0]
+        res = f"{len(out['census_divisions'])} divisions; most YTD: {top['region']} {top['ytd']:,}"
+    elif name == "get_newly_affected_jurisdictions":
+        res = ", ".join(f"{x['area']} (week {x['first_reported_week']})" for x in out["newly_affected"]) or "none"
+    elif name == "get_weekly_series":
+        res = f"{out['area']}: {len(out['series'])} weeks"
+    else:
+        res = ""
+    return f"{head}  ->  {res}"
+
+
 def _call(log: list[dict], name: str, fn: Callable[[], dict], args: dict) -> str:
     try:
         out = fn()
