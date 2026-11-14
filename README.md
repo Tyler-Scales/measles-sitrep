@@ -53,6 +53,30 @@ back to a tool call above.
   | Requests for hospitalizations, deaths, or vaccination status, which aren't in NNDSS | Prompt says decline; grader flags invented outcome figures | `outcomes-not-in-source`, plus a check on every case |
   | Requests for a week that isn't published yet | Tool returns an error; agent writes a short note instead of a report | `unpublished-week` |
 
+## Dashboard
+
+[U.S. Measles Tracker](https://claude.ai/artifact/X7BdDgAnifAsvJb2k44jQz) is an interactive
+companion dashboard on claude.ai. It's private until you share it from its Share menu. It shows:
+
+- a header sentence and four headline figures for the U.S. or any state
+- this year's running total against every year since 2022, week by week
+- the cases added each week, with a time-range toggle
+- a jurisdiction table with 12-week sparklines; click a row to filter the page to that state
+
+Its data is [`data/dashboard/measles_weekly.csv`](data/dashboard/measles_weekly.csv): the same
+NNDSS table, 2022 to date, for the nation, states, DC, NYC and territories. To refresh it
+after CDC's weekly update, rebuild the file, then re-upload it in the dashboard's Sources panel:
+
+```bash
+uv run python scripts/build_dashboard_data.py
+```
+
+The weekly bars use the rise in each year's running total, not CDC's "current week" column.
+Most measles cases reach CDC after the week they belong to, so that column undercounts badly:
+in 2025 it summed to 642 against a year-end total of 1,872. The weekly rises add up exactly
+to each year's total. The page source is in [`dashboard/index.html`](dashboard/index.html); it
+runs inside the claude.ai dashboard, which supplies its `dash` and `d3` APIs.
+
 ## Quick start
 
 Needs [uv](https://docs.astral.sh/uv/) and Python 3.12+.
@@ -193,7 +217,7 @@ sentences, a claim that unlisted jurisdictions had no cases, and guesses about h
 uv run pytest
 ```
 
-These 42 tests need no network or API key. They check:
+These 43 tests need no network or API key. They check:
 
 - parsing and MMWR week dates
 - that state totals add up to the national total in all four snapshots
@@ -207,6 +231,9 @@ These 42 tests need no network or API key. They check:
 ```
 src/measles_sitrep/   nndss.py (fetch/parse/snapshot) · analysis.py · tools.py · prompts.py · agent.py · cli.py
 data/snapshots/       frozen NNDSS measles rows (2025-w10, 2025-w30, 2026-w20, 2026-w44)
+data/dashboard/       weekly 2022-to-date series behind the dashboard
+dashboard/            the dashboard page source
+scripts/              build_dashboard_data.py
 evals/                cases.yaml · graders.py · run_evals.py
 tests/                pytest suite (offline)
 docs/                 example draft and tool log, README screenshots, and their build script

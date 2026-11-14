@@ -1,0 +1,786 @@
+<meta name="dash-one-writer">
+<style>
+  .mt { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .mt-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .mt-eyebrow { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .06em; text-transform: uppercase; }
+  .mt-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(30px, 4.2vw, 44px); line-height: 1.08; margin: 0; text-wrap: balance; }
+  .mt-lede { font-size: var(--cds-font-size-heading); line-height: 1.5; margin: 0; max-width: 64ch; text-wrap: pretty; }
+  .mt-lede b { font-weight: var(--cds-font-weight-medium); font-variant-numeric: tabular-nums; }
+  .mt-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm) var(--cds-gap-md); }
+  .mt-controls label, .mt-asof { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .mt-asof { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .mt-btn { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: transparent; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 12px; cursor: pointer; }
+  .mt-btn:hover { background: var(--color-panel); }
+  .mt-btn:focus-visible, .mt-seg button:focus-visible, .mt-table tbody tr:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+
+  .mt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--cds-gap-md); }
+  .mt-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .mt-tile-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .mt-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 38px; line-height: 1.1; font-variant-numeric: tabular-nums; min-height: 42px; }
+  .mt-delta { font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+  .mt-window { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; margin-top: auto; padding-top: var(--cds-gap-xs); }
+  .mt-bad { color: var(--color-bad); }
+  .mt-ok { color: var(--color-ok); }
+  .mt-flat { color: var(--color-fg-muted); }
+
+  .mt-section { display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .mt-section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm) var(--cds-gap-md); }
+  .mt-section h2 { font-size: var(--cds-font-size-title); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .mt-sub { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); margin: 0; max-width: 72ch; }
+  .mt-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .mt-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .mt-key { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
+  .mt-key-box { width: 10px; height: 10px; border-radius: 2px; }
+
+  .mt-chart { position: relative; min-height: 300px; }
+  .mt-chart svg { display: block; width: 100%; overflow: visible; touch-action: pan-y; }
+  .mt-chart text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); font-variant-numeric: tabular-nums; }
+  .mt-chart .mt-strong { fill: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .mt-chart .mt-halo { paint-order: stroke; stroke: var(--color-bg); stroke-width: 4px; stroke-linejoin: round; }
+  .mt-fail { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); padding: var(--cds-pad-lg) 0; }
+  .mt-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); color: var(--color-fg); min-width: 160px; z-index: 5; font-variant-numeric: tabular-nums; }
+  .mt-tip-title { color: var(--cds-text-secondary); margin-bottom: 4px; }
+  .mt-tip-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; line-height: 1.6; }
+  .mt-tip-row b { font-weight: var(--cds-font-weight-medium); }
+
+  .mt-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+  .mt-seg button { appearance: none; border: 0; background: transparent; color: var(--color-fg-muted); padding: 6px 12px; font: inherit; font-size: var(--cds-font-size-caption); cursor: pointer; }
+  .mt-seg button + button { border-left: 1px solid var(--color-border-line); }
+  .mt-seg button[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+
+  .mt-table-wrap { overflow-x: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .mt-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+  .mt-table th { text-align: left; font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding: 10px 14px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; background: var(--color-panel); }
+  .mt-table td { padding: 8px 14px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .mt-table tbody tr:last-child td { border-bottom: 0; }
+  .mt-table .num { text-align: right; }
+  .mt-table tbody tr { cursor: pointer; }
+  .mt-table tbody tr:hover td { background: color-mix(in srgb, var(--color-fg) 4%, transparent); }
+  .mt-table tbody tr.is-selected td { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .mt-table tbody tr.is-selected td:first-child { font-weight: var(--cds-font-weight-medium); }
+  .mt-share { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin-left: 6px; }
+  .mt-chip { display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px; border-radius: 999px; font-size: var(--cds-font-size-caption); border: 1px solid currentColor; line-height: 1.6; }
+  .mt-spark { display: block; }
+  .mt-table-foot { display: flex; justify-content: flex-start; }
+
+  .mt-notes { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+  .mt-notes summary { cursor: pointer; color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .mt-notes dl { display: grid; grid-template-columns: minmax(140px, max-content) 1fr; gap: var(--cds-gap-sm) var(--cds-gap-lg); margin: var(--cds-gap-md) 0 0; max-width: 90ch; }
+  .mt-notes dt { color: var(--color-fg); }
+  .mt-notes dd { margin: 0; }
+  @media (max-width: 560px) { .mt-notes dl { grid-template-columns: 1fr; } .mt-asof { margin-left: 0; } .mt-big { font-size: 32px; } }
+
+  [data-dash-source-state="refreshing"] { opacity: .5; }
+</style>
+
+<div class="mt">
+  <header class="mt-head" id="overview">
+    <div class="mt-eyebrow">CDC NNDSS · weekly provisional data</div>
+    <h1 class="mt-title">U.S. Measles Tracker</h1>
+    <p class="mt-lede" data-lede="main"><span data-draw="ledeArea">—</span> has recorded <b class="dash-skeleton" data-draw="kYtd" data-source="kpi" data-field="ytd" data-row="0">—</b> locally acquired measles cases in <span data-draw="kYear" data-source="kpi" data-field="year" data-row="0">—</span> through MMWR week <span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>, <b data-draw="kRatio" data-source="kpi" data-field="ratio" data-row="0">—</b> the <span data-draw="kPrev" data-source="kpi" data-field="ytd_prev" data-row="0">—</span> recorded by the same week last year.</p>
+    <p class="mt-lede" data-lede="small" hidden><span data-draw="ledeArea">—</span> has recorded <b data-draw="kYtd" data-source="kpi" data-field="ytd" data-row="0">—</b> locally acquired measles cases in <span data-draw="kYear" data-source="kpi" data-field="year" data-row="0">—</span> through MMWR week <span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>, compared with <span data-draw="kPrev" data-source="kpi" data-field="ytd_prev" data-row="0">—</span> by the same week last year.</p>
+    <p class="mt-lede" data-lede="new" hidden><span data-draw="ledeArea">—</span> has recorded <b data-draw="kYtd" data-source="kpi" data-field="ytd" data-row="0">—</b> locally acquired measles cases in <span data-draw="kYear" data-source="kpi" data-field="year" data-row="0">—</span> through MMWR week <span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>, after none by the same week last year.</p>
+    <p class="mt-lede" data-lede="none" hidden><span data-draw="ledeArea">—</span> has recorded no locally acquired measles cases in <span data-draw="kYear" data-source="kpi" data-field="year" data-row="0">—</span> through MMWR week <span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>.</p>
+    <span data-draw="ledeSwitch"></span>
+  </header>
+
+  <div class="mt-controls" id="filters">
+    <label for="mt-area">Area</label>
+    <select id="mt-area" class="dash-select" data-draw="areaSelect" aria-label="Area" data-source="weekly"></select>
+    <button type="button" class="mt-btn" id="mt-reset" hidden>Show United States</button>
+    <span class="mt-asof">Data through week ending <span data-draw="kDate" data-source="kpi" data-field="week_ending" data-row="0">—</span></span>
+  </div>
+
+  <section class="mt-tiles" id="summary" aria-label="Summary figures">
+    <div class="mt-tile" id="tile-ytd">
+      <div class="mt-tile-label">Locally acquired cases this year</div>
+      <div class="mt-big dash-skeleton" data-draw="kYtdBig" data-source="kpi" data-field="ytd" data-row="0">—</div>
+      <div class="mt-delta"><span data-draw="kYtdPct" data-source="kpi" data-field="ytd_pct" data-row="0">—</span> vs. same week last year (<span data-draw="kPrev" data-source="kpi" data-field="ytd_prev" data-row="0">—</span>)</div>
+      <div class="mt-window">MMWR weeks 1–<span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>, <span data-draw="kYear" data-source="kpi" data-field="year" data-row="0">—</span></div>
+    </div>
+    <div class="mt-tile" id="tile-week">
+      <div class="mt-tile-label">Added to the count this week</div>
+      <div class="mt-big dash-skeleton" data-draw="kAdded" data-source="kpi" data-field="added_week" data-row="0">—</div>
+      <div class="mt-delta mt-flat">CDC current-week column: <span data-draw="kReported" data-source="kpi" data-field="reported_week" data-row="0">—</span></div>
+      <div class="mt-window">Week <span data-draw="kWeek" data-source="kpi" data-field="week" data-row="0">—</span>, ending <span data-draw="kDate" data-source="kpi" data-field="week_ending" data-row="0">—</span> · includes late reports</div>
+    </div>
+    <div class="mt-tile" id="tile-trend">
+      <div class="mt-tile-label">Added in the last 4 weeks</div>
+      <div class="mt-big dash-skeleton" data-draw="kRecent" data-source="kpi" data-field="recent4" data-row="0">—</div>
+      <div class="mt-delta"><span data-draw="kTrendPct" data-source="kpi" data-field="trend_pct" data-row="0">—</span> vs. the 4 weeks before (<span data-draw="kPrior" data-source="kpi" data-field="prior4" data-row="0">—</span>)</div>
+      <div class="mt-window">Weeks <span data-draw="kRecentWeeks" data-source="kpi" data-field="recent_weeks" data-row="0">—</span> vs. <span data-draw="kPriorWeeks" data-source="kpi" data-field="prior_weeks" data-row="0">—</span> · <span data-draw="kDirection" data-source="kpi" data-field="direction" data-row="0">—</span></div>
+    </div>
+    <div class="mt-tile" id="tile-imported">
+      <div class="mt-tile-label">Imported cases this year</div>
+      <div class="mt-big dash-skeleton" data-draw="kImp" data-source="kpi" data-field="imported_ytd" data-row="0">—</div>
+      <div class="mt-delta"><span data-draw="kImpPct" data-source="kpi" data-field="imported_pct" data-row="0">—</span> vs. same week last year (<span data-draw="kImpPrev" data-source="kpi" data-field="imported_ytd_prev" data-row="0">—</span>)</div>
+      <div class="mt-window">Acquired outside the U.S.</div>
+    </div>
+  </section>
+
+  <section class="mt-section" id="cumulative">
+    <div class="mt-section-head">
+      <h2>Cases so far this year, compared with past years</h2>
+    </div>
+    <p class="mt-sub">Running total of locally acquired cases by MMWR week, as CDC published it each week. Point at the chart to compare years at the same week.</p>
+    <div class="mt-chart" id="cum-chart" data-draw="cumChart" data-source="series"></div>
+  </section>
+
+  <section class="mt-section" id="weekly">
+    <div class="mt-section-head">
+      <h2>New cases added each week</h2>
+      <div class="mt-seg" role="group" aria-label="Time range">
+        <button type="button" data-range="all" aria-pressed="true">Since 2022</button>
+        <button type="button" data-range="year" aria-pressed="false">This year</button>
+        <button type="button" data-range="26" aria-pressed="false">Last 26 weeks</button>
+      </div>
+    </div>
+    <p class="mt-sub">Each bar is the rise in the year's running total that week, so it includes late reports for earlier weeks. Bars below zero are revisions that removed cases.</p>
+    <div class="mt-legend">
+      <span><i class="mt-key mt-key-box" data-series="0"></i>Locally acquired</span>
+      <span><i class="mt-key mt-key-box" data-series="1"></i>Imported</span>
+    </div>
+    <div class="mt-chart" id="weekly-chart" data-draw="weeklyChart" data-source="series"></div>
+  </section>
+
+  <section class="mt-section" id="jurisdictions">
+    <div class="mt-section-head">
+      <h2>Where cases are this year</h2>
+    </div>
+    <p class="mt-sub"><span data-draw="jurisCount" data-source="coverage">—</span> jurisdictions have reported locally acquired cases this year. Select a row to see its numbers above.</p>
+    <div class="mt-table-wrap" id="juris-wrap">
+      <table class="mt-table" data-source="jurisdictions" data-row-key="area">
+        <thead>
+          <tr>
+            <th data-field="area">Jurisdiction</th>
+            <th class="num" data-field="added_week">Added this week</th>
+            <th class="num" data-field="ytd">This year</th>
+            <th class="num" data-field="ytd_prev">Same week last year</th>
+            <th>Last 12 weeks</th>
+            <th data-field="direction">4-week trend</th>
+          </tr>
+        </thead>
+        <tbody data-draw="jurisRows"></tbody>
+      </table>
+    </div>
+    <div class="mt-table-foot">
+      <button type="button" class="mt-btn" id="mt-more">Show all jurisdictions</button>
+      <button type="button" class="mt-btn" id="mt-less" hidden>Show top 12</button>
+    </div>
+  </section>
+
+  <details class="mt-notes" id="notes">
+    <summary>About these numbers</summary>
+    <dl>
+      <dt>Source</dt>
+      <dd>CDC's National Notifiable Diseases Surveillance System (NNDSS) weekly table on data.cdc.gov (dataset x9gk-5huc), labels "Measles, Indigenous" and "Measles, Imported". Counts are provisional and shown as CDC published them each week.</dd>
+      <dt>Locally acquired</dt>
+      <dd>NNDSS calls these "indigenous" cases: people infected in the United States. Imported cases were infected abroad.</dd>
+      <dt>Added each week</dt>
+      <dd>The rise in the year's running total since the week before. Most measles cases reach CDC after the week they belong to, so CDC's own current-week column misses many of them. The weekly additions include those late reports, and they add up to the year's total.</dd>
+      <dt>4-week trend</dt>
+      <dd>Cases added in the latest 4 weeks compared with the 4 weeks before. A change of more than 20% either way counts as increasing or decreasing; anything smaller is stable.</dd>
+      <dt>% change</dt>
+      <dd>Not shown when last year's count at the same week was under 20, because a small base makes the percentage misleading. The tile shows both counts instead.</dd>
+      <dt>New York</dt>
+      <dd>NNDSS reports New York City separately, so "New York State (excl. NYC)" covers the rest of the state.</dd>
+      <dt>MMWR weeks</dt>
+      <dd>CDC's epidemiological weeks run Sunday through Saturday. Week 1 is the first week with at least four days in January.</dd>
+    </dl>
+  </details>
+</div>
+
+<script>
+  // Calculations, readable in Sources. Each turns the weekly table's text cells into numbers.
+  dash.calc('series', {
+    inputs: ['weekly'],
+    title: 'Weekly series for the selected area',
+    description: 'Every week of the weekly table for the area picked above, as numbers.',
+    fn: (weekly) => {
+      const area = dash.params().area || 'U.S. Residents';
+      const num = (v) => (v === '' || v == null ? null : Number(v));
+      return weekly
+        .filter((r) => r.area === area)
+        .map((r) => ({
+          area: r.area, year: Number(r.year), week: Number(r.week), week_ending: r.week_ending,
+          added: num(r.indigenous_added), imported_added: num(r.imported_added),
+          ytd: num(r.indigenous_ytd), ytd_prev: num(r.indigenous_ytd_prev),
+          imported_ytd: num(r.imported_ytd), imported_ytd_prev: num(r.imported_ytd_prev),
+          reported: num(r.indigenous),
+        }))
+        .sort((a, b) => a.year - b.year || a.week - b.week);
+    },
+  });
+
+  dash.calc('kpi', {
+    inputs: ['series'],
+    title: 'Headline figures for the selected area',
+    description: 'Latest week, year-to-date totals with the change from last year, and the 4-week trend.',
+    fn: (series) => {
+      if (!series || !series.length) return [];
+      const year = Math.max(...series.map((r) => r.year));
+      const rows = series.filter((r) => r.year === year);
+      const last = rows[rows.length - 1];
+      const total = (list) => list.reduce((s, r) => s + (r.added ?? 0), 0);
+      const pct = (a, b) => (b == null || b === 0 ? null : Math.round((1000 * (a - b)) / b) / 10);
+      const recent = rows.slice(-4);
+      const prior = rows.slice(-8, -4);
+      const recent4 = total(recent);
+      const prior4 = prior.length === 4 ? total(prior) : null;
+      const trend = pct(recent4, prior4);
+      const direction = prior4 == null ? 'not enough weeks yet'
+        : prior4 === 0 ? (recent4 > 0 ? 'increasing' : 'no recent cases')
+        : trend > 20 ? 'increasing' : trend < -20 ? 'decreasing' : 'stable';
+      return [{
+        area: last.area, year, week: last.week, week_ending: last.week_ending,
+        ytd: last.ytd, ytd_prev: last.ytd_prev,
+        ytd_pct: last.ytd_prev >= 20 ? pct(last.ytd, last.ytd_prev) : null,
+        ratio: last.ytd_prev > 0 ? Math.round((10 * last.ytd) / last.ytd_prev) / 10 : null,
+        added_week: last.added, reported_week: last.reported,
+        recent4, prior4, trend_pct: trend, direction,
+        recent_weeks: `${recent[0].week}–${last.week}`,
+        prior_weeks: prior.length ? `${prior[0].week}–${prior[prior.length - 1].week}` : '',
+        imported_ytd: last.imported_ytd, imported_ytd_prev: last.imported_ytd_prev,
+        imported_pct: last.imported_ytd_prev >= 20 ? pct(last.imported_ytd, last.imported_ytd_prev) : null,
+      }];
+    },
+  });
+
+  dash.calc('jurisdictions', {
+    inputs: ['weekly'],
+    title: 'Jurisdictions with cases this year',
+    description: 'States, DC, NYC and territories with locally acquired cases in the latest year, ranked by year-to-date total.',
+    fn: (weekly) => {
+      const num = (v) => (v === '' || v == null ? null : Number(v));
+      const year = Math.max(...weekly.map((r) => Number(r.year)));
+      const byArea = new Map();
+      for (const r of weekly) {
+        if (Number(r.year) !== year || r.area_type === 'national') continue;
+        if (!byArea.has(r.area)) byArea.set(r.area, []);
+        byArea.get(r.area).push(r);
+      }
+      const out = [];
+      for (const [area, list] of byArea) {
+        list.sort((a, b) => Number(a.week) - Number(b.week));
+        const last = list[list.length - 1];
+        const ytd = num(last.indigenous_ytd);
+        if (!ytd) continue;
+        const added = list.map((r) => num(r.indigenous_added) ?? 0);
+        const recent4 = added.slice(-4).reduce((s, v) => s + v, 0);
+        const prior4 = added.slice(-8, -4).reduce((s, v) => s + v, 0);
+        const change = prior4 ? ((recent4 - prior4) / prior4) * 100 : null;
+        const direction = prior4 === 0 ? (recent4 > 0 ? 'increasing' : 'no recent cases')
+          : change > 20 ? 'increasing' : change < -20 ? 'decreasing' : 'stable';
+        out.push({
+          area, ytd, ytd_prev: num(last.indigenous_ytd_prev), added_week: num(last.indigenous_added),
+          recent4, prior4, direction, last12: added.slice(-12).join(','),
+        });
+      }
+      return out.sort((a, b) => b.ytd - a.ytd || a.area.localeCompare(b.area));
+    },
+  });
+
+  dash.calc('coverage', {
+    inputs: ['jurisdictions'],
+    title: 'Number of jurisdictions with cases this year',
+    description: 'Count of rows in the jurisdictions table.',
+    fn: (jurisdictions) => (jurisdictions ? jurisdictions.length : null),
+  });
+
+  // Shared helpers for the drawing scripts.
+  window.MT = (() => {
+    const NATIONAL = 'U.S. Residents';
+    const parseDate = d3.utcParse('%Y-%m-%d');
+    const fmtDate = d3.utcFormat('%b %-d, %Y');
+    const fmtShort = d3.utcFormat('%b %-d');
+    const fmt = d3.format(',');
+    const signed = (v) => (v == null ? null : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}%`);
+    const label = (a) => (a === NATIONAL ? 'United States' : a === 'New York' ? 'New York State (excl. NYC)' : a);
+    const subject = (a) => (a === NATIONAL ? 'The U.S.' : label(a));
+    const area = () => dash.params().area || NATIONAL;
+    const kpi = () => {
+      const k = dash.data('kpi');
+      return { status: k.status, row: k.status === 'ok' && Array.isArray(k.data) ? k.data[0] : null };
+    };
+    // A number or word from the headline row. Shows "—" until it loads.
+    const text = (name, fn) => dash.draw(name, (el) => {
+      const { status, row } = kpi();
+      if (status === 'loading') { el.textContent = '—'; return; }
+      el.classList.remove('dash-skeleton');
+      const v = row ? fn(row) : null;
+      el.textContent = v == null || v === '' ? '—' : v;
+    });
+    // A change that is bad when it rises (more measles).
+    const delta = (name, field, baseField) => dash.draw(name, (el) => {
+      const { status, row } = kpi();
+      el.classList.remove('mt-bad', 'mt-ok', 'mt-flat');
+      if (status === 'loading' || !row) { el.textContent = '—'; return; }
+      const v = row[field];
+      if (v == null) {
+        el.textContent = row[baseField] === 0 ? 'none last year' : 'no % (small base)';
+        el.classList.add('mt-flat');
+        return;
+      }
+      el.textContent = signed(v);
+      el.classList.add(v > 0 ? 'mt-bad' : v < 0 ? 'mt-ok' : 'mt-flat');
+    });
+    const failed = (el, status) => {
+      if (status === 'error') {
+        const p = document.createElement('div');
+        p.className = 'mt-fail';
+        p.textContent = 'Failed to load';
+        el.replaceChildren(p);
+        return true;
+      }
+      return false;
+    };
+    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Keep a tooltip inside its chart box.
+    const placeTip = (tip, box, x, y) => {
+      const tw = tip.offsetWidth, th = tip.offsetHeight, bw = box.clientWidth;
+      let left = x + 14;
+      if (left + tw > bw) left = x - tw - 14;
+      tip.style.left = `${Math.max(0, left)}px`;
+      tip.style.top = `${Math.max(0, y - th / 2)}px`;
+    };
+    // Left margin wide enough for the widest y tick label as drawn.
+    const measure = (svg, strings) => {
+      const t = svg.append('text').attr('x', -9999).attr('y', -9999);
+      let w = 0;
+      for (const s of strings) { t.text(s); w = Math.max(w, t.node().getComputedTextLength()); }
+      t.remove();
+      return w;
+    };
+    return { NATIONAL, parseDate, fmtDate, fmtShort, fmt, signed, label, subject, area, kpi, text, delta, failed, reduced, placeTip, measure };
+  })();
+</script>
+
+<script>
+  // Header sentence, tiles and controls.
+  const { fmt, fmtDate, parseDate, signed } = MT;
+  MT.text('kYtd', (r) => fmt(r.ytd));
+  MT.text('kYtdBig', (r) => fmt(r.ytd));
+  MT.text('kYear', (r) => String(r.year));
+  MT.text('kWeek', (r) => String(r.week));
+  MT.text('kPrev', (r) => (r.ytd_prev == null ? null : fmt(r.ytd_prev)));
+  MT.text('kRatio', (r) => (r.ratio == null ? null : `${r.ratio.toFixed(1)} times`));
+  MT.text('kDate', (r) => fmtDate(parseDate(r.week_ending)));
+  MT.text('kAdded', (r) => (r.added_week == null ? null : fmt(r.added_week)));
+  MT.text('kReported', (r) => (r.reported_week == null ? null : fmt(r.reported_week)));
+  MT.text('kRecent', (r) => fmt(r.recent4));
+  MT.text('kPrior', (r) => (r.prior4 == null ? null : fmt(r.prior4)));
+  MT.text('kRecentWeeks', (r) => r.recent_weeks);
+  MT.text('kPriorWeeks', (r) => r.prior_weeks);
+  MT.text('kImp', (r) => (r.imported_ytd == null ? null : fmt(r.imported_ytd)));
+  MT.text('kImpPrev', (r) => (r.imported_ytd_prev == null ? null : fmt(r.imported_ytd_prev)));
+  MT.delta('kYtdPct', 'ytd_pct', 'ytd_prev');
+  MT.delta('kImpPct', 'imported_pct', 'imported_ytd_prev');
+
+  dash.draw('kTrendPct', (el) => {
+    const { status, row } = MT.kpi();
+    el.classList.remove('mt-bad', 'mt-ok', 'mt-flat');
+    if (status === 'loading' || !row || row.trend_pct == null) { el.textContent = '—'; return; }
+    el.textContent = signed(row.trend_pct);
+    el.classList.add(row.direction === 'increasing' ? 'mt-bad' : row.direction === 'decreasing' ? 'mt-ok' : 'mt-flat');
+  });
+
+  dash.draw('kDirection', (el) => {
+    const { status, row } = MT.kpi();
+    el.classList.remove('mt-bad', 'mt-ok', 'mt-flat');
+    if (status === 'loading' || !row) { el.textContent = '—'; return; }
+    el.textContent = row.direction;
+    el.classList.add(row.direction === 'increasing' ? 'mt-bad' : row.direction === 'decreasing' ? 'mt-ok' : 'mt-flat');
+  });
+
+  dash.draw('ledeArea', (el) => { el.textContent = MT.subject(MT.area()); });
+
+  // Picks which header sentence fits the numbers.
+  dash.draw('ledeSwitch', () => {
+    const { row } = MT.kpi();
+    // Last year's count under 20 makes a multiple misleading, so that case names both counts.
+    const mode = !row ? 'main' : row.ytd === 0 ? 'none' : row.ytd_prev >= 20 ? 'main' : row.ytd_prev > 0 ? 'small' : 'new';
+    document.querySelectorAll('[data-lede]').forEach((p) => { p.hidden = p.getAttribute('data-lede') !== mode; });
+  });
+
+  dash.draw('areaSelect', (sel) => {
+    const w = dash.data('weekly');
+    const rows = w.status === 'ok' ? w.data : [];
+    const types = new Map();
+    for (const r of rows) types.set(r.area, r.area_type);
+    const names = [...types.keys()];
+    const group = (title, list) => {
+      const g = document.createElement('optgroup');
+      g.label = title;
+      list.sort((a, b) => MT.label(a).localeCompare(MT.label(b))).forEach((a) => g.append(new Option(MT.label(a), a)));
+      return g;
+    };
+    sel.replaceChildren(
+      new Option('United States', MT.NATIONAL),
+      group('States, DC and NYC', names.filter((a) => types.get(a) === 'state')),
+      group('Territories', names.filter((a) => types.get(a) === 'territory')),
+    );
+    sel.value = MT.area();
+    sel.onchange = () => dash.setParams({ area: sel.value });
+  });
+
+  dash.draw('jurisCount', (el) => {
+    const c = dash.data('coverage');
+    el.textContent = c.status === 'ok' && c.data != null ? String(c.data) : '—';
+  });
+
+  // Listeners and state shown through attributes.
+  document.querySelectorAll('#mt-reset').forEach((b) => b.addEventListener('click', () => dash.setParams({ area: MT.NATIONAL })));
+  document.querySelectorAll('.mt-seg button[data-range]').forEach((b) =>
+    b.addEventListener('click', () => dash.setParams({ range: b.getAttribute('data-range') })));
+  document.querySelectorAll('.mt-key[data-series]').forEach((k) => { k.style.background = dash.colors[Number(k.getAttribute('data-series'))]; });
+  const toggleTable = (expand) => {
+    document.querySelectorAll('#juris-wrap').forEach((w) => w.classList.toggle('is-expanded', expand));
+    document.querySelectorAll('#mt-more').forEach((b) => { b.hidden = expand; });
+    document.querySelectorAll('#mt-less').forEach((b) => { b.hidden = !expand; });
+    dash.draw('jurisRows');
+  };
+  document.querySelectorAll('#mt-more').forEach((b) => b.addEventListener('click', () => toggleTable(true)));
+  document.querySelectorAll('#mt-less').forEach((b) => b.addEventListener('click', () => toggleTable(false)));
+
+  dash.onData(() => {
+    const p = dash.params();
+    document.querySelectorAll('#mt-reset').forEach((b) => { b.hidden = !p.area || p.area === MT.NATIONAL; });
+    document.querySelectorAll('.mt-seg button[data-range]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-range') === (p.range || 'all')));
+    });
+  });
+</script>
+
+<script>
+  // Running total by MMWR week, one line per year.
+  dash.draw('cumChart', {
+    mount(el) {
+      const legend = d3.select(el).append('div').attr('class', 'mt-legend').style('margin-bottom', '8px');
+      const svg = d3.select(el).append('svg').attr('role', 'img');
+      const tip = d3.select(el).append('div').attr('class', 'mt-tip').attr('hidden', '');
+      return { legend, svg, tip, animated: false };
+    },
+    update(el, m) {
+      const s = dash.data('series');
+      if (s.status !== 'ok') {
+        if (MT.failed(el, s.status)) return;
+        m.svg.selectAll('*').remove(); m.legend.selectAll('*').remove();
+        return;
+      }
+      const rows = s.data.filter((r) => r.ytd != null);
+      if (!rows.length) { m.svg.selectAll('*').remove(); return; }
+      const years = [...new Set(rows.map((r) => r.year))].sort();
+      const latest = years[years.length - 1];
+      const byYear = new Map(years.map((y) => [y, rows.filter((r) => r.year === y)]));
+      const colorOf = (y) => (y === latest ? dash.colors[0] : y === latest - 1 ? 'var(--color-fg-muted)' : 'var(--cds-chart-muted)');
+      const widthOf = (y) => (y === latest ? 2.5 : y === latest - 1 ? 1.75 : 1.5);
+
+      // Legend: newest first.
+      m.legend.selectAll('span').data([...years].reverse(), (d) => d).join((enter) => {
+        const sp = enter.append('span');
+        sp.append('i').attr('class', 'mt-key');
+        sp.append('b').style('font-weight', 'inherit');
+        return sp;
+      }).each(function (y) {
+        d3.select(this).select('i').style('background', colorOf(y));
+        d3.select(this).select('b').text(String(y)).style('color', y === latest ? 'var(--color-fg)' : null);
+      });
+
+      const W = Math.max(280, el.clientWidth);
+      const H = W < 520 ? 260 : 340;
+      const svg = m.svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+      svg.selectAll('*').remove();
+      const yMax = d3.max(rows, (r) => r.ytd) || 1;
+      const y0 = d3.scaleLinear().domain([0, yMax]).nice();
+      const yTicks = y0.ticks(H < 300 ? 4 : 5);
+      const left = Math.ceil(MT.measure(svg, yTicks.map(MT.fmt))) + 10;
+
+      // End labels for finished years sit at the right edge; give them room.
+      const endText = (y) => `${y}  ${MT.fmt(byYear.get(y).at(-1).ytd)}`;
+      const right = Math.ceil(MT.measure(svg, years.filter((y) => y !== latest).map(endText))) + 14;
+      const M = { top: 10, right: Math.min(right, W * 0.3), bottom: 26, left };
+      const x = d3.scaleLinear().domain([1, 53]).range([M.left, W - M.right]);
+      const y = y0.range([H - M.bottom, M.top]);
+
+      const grid = svg.append('g');
+      grid.selectAll('line').data(yTicks).join('line')
+        .attr('x1', M.left).attr('x2', W - M.right).attr('y1', y).attr('y2', y)
+        .style('stroke', (d) => (d === 0 ? 'var(--cds-chart-axis)' : 'var(--cds-chart-grid)'));
+      grid.selectAll('text').data(yTicks).join('text')
+        .attr('x', M.left - 8).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').text(MT.fmt);
+      const xTicks = W < 480 ? [1, 13, 26, 39, 52] : [1, 9, 18, 26, 35, 44, 52];
+      svg.append('g').selectAll('text').data(xTicks).join('text')
+        .attr('x', x).attr('y', H - 6).attr('text-anchor', 'middle')
+        .text((d) => (d === 1 ? 'Week 1' : String(d)));
+
+      const line = d3.line().x((r) => x(r.week)).y((r) => y(r.ytd)).curve(d3.curveLinear);
+      const lines = svg.append('g').attr('fill', 'none').attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+      for (const yr of years) {
+        const path = lines.append('path').datum(byYear.get(yr)).attr('d', line)
+          .style('stroke', colorOf(yr)).style('stroke-width', widthOf(yr));
+        if (yr === latest && !m.animated && !MT.reduced()) {
+          const len = path.node().getTotalLength();
+          path.attr('stroke-dasharray', `${len} ${len}`).attr('stroke-dashoffset', len)
+            .transition().duration(900).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0)
+            .on('end', () => path.attr('stroke-dasharray', null));
+        }
+      }
+      m.animated = true;
+
+      // Labels: finished years at the right edge, spaced so they never overlap.
+      const done = years.filter((yr) => yr !== latest)
+        .map((yr) => ({ yr, y: y(byYear.get(yr).at(-1).ytd) }))
+        .sort((a, b) => b.y - a.y);
+      const gap = 14;
+      for (let i = 1; i < done.length; i++) if (done[i - 1].y - done[i].y < gap) done[i].y = done[i - 1].y - gap;
+      for (let i = done.length - 1; i >= 0; i--) if (done[i].y < M.top + 6) done[i].y = M.top + 6;
+      svg.append('g').selectAll('text').data(done).join('text')
+        .attr('x', W - M.right + 6).attr('y', (d) => d.y).attr('dy', '0.32em').text((d) => endText(d.yr));
+
+      const lastRow = byYear.get(latest).at(-1);
+      const lx = x(lastRow.week), ly = y(lastRow.ytd);
+      svg.append('circle').attr('cx', lx).attr('cy', ly).attr('r', 4.5)
+        .style('fill', dash.colors[0]).style('stroke', 'var(--color-bg)').style('stroke-width', 2);
+      const endLabel = svg.append('text').attr('class', 'mt-strong mt-halo').attr('y', ly).attr('dy', '0.32em').text(endText(latest));
+      const ew = endLabel.node().getComputedTextLength();
+      const toRight = lx + 10 + ew < W - M.right - 4;
+      endLabel.attr('x', toRight ? lx + 10 : lx - 10).attr('text-anchor', toRight ? 'start' : 'end');
+      if (!toRight) endLabel.attr('y', ly - 14);
+
+      svg.attr('aria-label', `Running total of locally acquired measles cases by MMWR week in ${MT.label(MT.area())}, ${years[0]} to ${latest}. ${latest}: ${MT.fmt(lastRow.ytd)} through week ${lastRow.week}.`);
+
+      // Hover: a crosshair at one week, with every year's total there.
+      const hover = svg.append('g').style('display', 'none');
+      hover.append('line').attr('y1', M.top).attr('y2', H - M.bottom).style('stroke', 'var(--cds-chart-reference)');
+      const dots = hover.selectAll('circle').data(years).join('circle').attr('r', 3.5)
+        .style('fill', (yr) => colorOf(yr)).style('stroke', 'var(--color-bg)').style('stroke-width', 1.5);
+      const tip = m.tip.node();
+      const show = (event) => {
+        const [px] = d3.pointer(event, svg.node());
+        const wk = Math.max(1, Math.min(53, Math.round(x.invert(px))));
+        const at = years.map((yr) => ({ yr, r: byYear.get(yr).find((r) => r.week === wk) })).filter((d) => d.r);
+        if (!at.length) return;
+        hover.style('display', null);
+        hover.select('line').attr('x1', x(wk)).attr('x2', x(wk));
+        dots.style('display', (yr) => (at.some((d) => d.yr === yr) ? null : 'none'))
+          .attr('cx', x(wk)).attr('cy', (yr) => { const d = at.find((a) => a.yr === yr); return d ? y(d.r.ytd) : 0; });
+        const title = document.createElement('div');
+        title.className = 'mt-tip-title';
+        title.textContent = `Through MMWR week ${wk}`;
+        const items = [...at].reverse().map(({ yr, r }) => {
+          const row = document.createElement('div');
+          row.className = 'mt-tip-row';
+          const k = document.createElement('span');
+          const sw = document.createElement('i');
+          sw.className = 'mt-key'; sw.style.background = colorOf(yr); sw.style.marginRight = '6px';
+          k.append(sw, String(yr));
+          const v = document.createElement('b');
+          v.textContent = MT.fmt(r.ytd);
+          row.append(k, v);
+          return row;
+        });
+        tip.replaceChildren(title, ...items);
+        tip.hidden = false;
+        const rect = svg.node().getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        MT.placeTip(tip, el, (x(wk) / W) * rect.width + rect.left - box.left, event.clientY - box.top);
+      };
+      svg.append('rect').attr('x', M.left).attr('y', M.top).attr('width', W - M.left - M.right).attr('height', H - M.top - M.bottom)
+        .style('fill', 'transparent')
+        .on('pointermove', show).on('pointerdown', show)
+        .on('pointerleave', () => { hover.style('display', 'none'); tip.hidden = true; });
+    },
+  });
+</script>
+
+<script>
+  // Weekly additions as columns: locally acquired, with imported stacked on top.
+  dash.draw('weeklyChart', {
+    mount(el) {
+      const svg = d3.select(el).append('svg').attr('role', 'img');
+      const tip = d3.select(el).append('div').attr('class', 'mt-tip').attr('hidden', '');
+      return { svg, tip };
+    },
+    update(el, m) {
+      const s = dash.data('series');
+      if (s.status !== 'ok') {
+        if (MT.failed(el, s.status)) return;
+        m.svg.selectAll('*').remove();
+        return;
+      }
+      let rows = s.data.filter((r) => r.added != null || r.imported_added != null);
+      const range = dash.params().range || 'all';
+      const latest = d3.max(rows, (r) => r.year);
+      if (range === 'year') rows = rows.filter((r) => r.year === latest);
+      if (range === '26') rows = rows.slice(-26);
+      if (!rows.length) { m.svg.selectAll('*').remove(); return; }
+
+      const W = Math.max(280, el.clientWidth);
+      const H = W < 520 ? 220 : 280;
+      const svg = m.svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+      svg.selectAll('*').remove();
+
+      const parts = rows.map((r) => {
+        const a = r.added ?? 0, b = r.imported_added ?? 0;
+        const pos = Math.max(0, a) + Math.max(0, b);
+        const neg = Math.min(0, a) + Math.min(0, b);
+        return { r, a, b, pos, neg };
+      });
+      const y0 = d3.scaleLinear().domain([Math.min(0, d3.min(parts, (p) => p.neg)), Math.max(1, d3.max(parts, (p) => p.pos))]).nice();
+      const yTicks = y0.ticks(H < 260 ? 4 : 5);
+      const left = Math.ceil(MT.measure(svg, yTicks.map(MT.fmt))) + 10;
+      const M = { top: 18, right: 8, bottom: 26, left };
+      const keys = rows.map((r) => `${r.year}-${r.week}`);
+      const step = (W - M.left - M.right) / rows.length;
+      const x = d3.scaleBand().domain(keys).range([M.left, W - M.right]).paddingInner(step >= 6 ? 2 / step : 0);
+      const y = y0.range([H - M.bottom, M.top]);
+      const bw = x.bandwidth();
+
+      svg.append('g').selectAll('line').data(yTicks).join('line')
+        .attr('x1', M.left).attr('x2', W - M.right).attr('y1', y).attr('y2', y)
+        .style('stroke', (d) => (d === 0 ? 'var(--cds-chart-axis)' : 'var(--cds-chart-grid)'));
+      svg.append('g').selectAll('text').data(yTicks).join('text')
+        .attr('x', M.left - 8).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').text(MT.fmt);
+
+      // Year boundaries when the range spans several years; dates otherwise.
+      const multi = new Set(rows.map((r) => r.year)).size > 1;
+      if (multi) {
+        const starts = rows.filter((r, i) => i === 0 || r.year !== rows[i - 1].year);
+        const g = svg.append('g');
+        g.selectAll('line').data(starts.slice(1)).join('line')
+          .attr('x1', (r) => x(`${r.year}-${r.week}`) - 1).attr('x2', (r) => x(`${r.year}-${r.week}`) - 1)
+          .attr('y1', M.top - 14).attr('y2', H - M.bottom).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 3');
+        g.selectAll('text').data(starts).join('text')
+          .attr('x', (r) => x(`${r.year}-${r.week}`) + 4).attr('y', H - 6).text((r) => String(r.year));
+      } else {
+        const every = Math.max(1, Math.ceil(64 / step));
+        svg.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0)).join('text')
+          .attr('x', (r) => x(`${r.year}-${r.week}`) + bw / 2).attr('y', H - 6).attr('text-anchor', 'middle')
+          .text((r) => MT.fmtShort(MT.parseDate(r.week_ending)));
+      }
+
+      const radius = bw >= 6 ? 2 : 0;
+      const bars = svg.append('g');
+      const seg = (p, kind) => {
+        if (kind === 'a') return p.a >= 0 ? [0, p.a] : [p.a, 0];
+        if (p.b >= 0) return [Math.max(0, p.a), Math.max(0, p.a) + p.b];
+        return [Math.min(0, p.a) + p.b, Math.min(0, p.a)];
+      };
+      for (const [kind, color] of [['a', dash.colors[0]], ['b', dash.colors[1]]]) {
+        bars.append('g').selectAll('rect').data(parts.filter((p) => (kind === 'a' ? p.a : p.b) !== 0)).join('rect')
+          .attr('x', (p) => x(`${p.r.year}-${p.r.week}`)).attr('width', Math.max(1, bw))
+          .attr('y', (p) => y(seg(p, kind)[1])).attr('height', (p) => Math.max(1, y(seg(p, kind)[0]) - y(seg(p, kind)[1])))
+          .attr('rx', radius).style('fill', color).attr('class', 'mt-bar');
+      }
+
+      const total = d3.sum(rows, (r) => (r.added ?? 0));
+      svg.attr('aria-label', `Locally acquired and imported measles cases added each week in ${MT.label(MT.area())}, ${rows[0].year} week ${rows[0].week} to ${rows.at(-1).year} week ${rows.at(-1).week}. ${MT.fmt(total)} locally acquired cases added over this range.`);
+
+      const marker = svg.append('rect').style('fill', 'none').style('stroke', 'var(--color-fg)').style('stroke-width', 1).style('display', 'none').attr('rx', 2);
+      const tip = m.tip.node();
+      const row = (k, v, color) => {
+        const d = document.createElement('div');
+        d.className = 'mt-tip-row';
+        const a = document.createElement('span');
+        if (color) { const sw = document.createElement('i'); sw.className = 'mt-key mt-key-box'; sw.style.background = color; sw.style.marginRight = '6px'; a.append(sw); }
+        a.append(k);
+        const b = document.createElement('b');
+        b.textContent = v;
+        d.append(a, b);
+        return d;
+      };
+      const show = (event) => {
+        const rect = svg.node().getBoundingClientRect();
+        const px = ((event.clientX - rect.left) / rect.width) * W;
+        const i = Math.max(0, Math.min(rows.length - 1, Math.floor((px - M.left) / step)));
+        const p = parts[i];
+        const bx = x(`${p.r.year}-${p.r.week}`);
+        marker.style('display', null).attr('x', bx - 2).attr('width', Math.max(1, bw) + 4)
+          .attr('y', y(p.pos) - 2).attr('height', Math.max(4, y(p.neg) - y(p.pos) + 4));
+        const title = document.createElement('div');
+        title.className = 'mt-tip-title';
+        title.textContent = `Week ${p.r.week}, ${p.r.year} · ending ${MT.fmtDate(MT.parseDate(p.r.week_ending))}`;
+        const items = [title, row('Locally acquired', MT.fmt(p.a), dash.colors[0]), row('Imported', MT.fmt(p.b), dash.colors[1])];
+        if (p.r.reported != null) items.push(row('CDC current-week column', MT.fmt(p.r.reported)));
+        tip.replaceChildren(...items);
+        tip.hidden = false;
+        const box = el.getBoundingClientRect();
+        MT.placeTip(tip, el, ((bx + bw / 2) / W) * rect.width + rect.left - box.left, event.clientY - box.top);
+      };
+      svg.append('rect').attr('x', M.left).attr('y', M.top).attr('width', W - M.left - M.right).attr('height', H - M.top - M.bottom)
+        .style('fill', 'transparent')
+        .on('pointermove', show).on('pointerdown', show)
+        .on('pointerleave', () => { marker.style('display', 'none'); tip.hidden = true; });
+    },
+  });
+</script>
+
+<script>
+  // Jurisdiction table with a sparkline of the last 12 weeks.
+  dash.draw('jurisRows', (tbody) => {
+    const j = dash.data('jurisdictions');
+    if (j.status !== 'ok' || !Array.isArray(j.data)) {
+      tbody.replaceChildren();
+      if (j.status === 'error') {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 6; td.className = 'mt-fail'; td.textContent = 'Failed to load';
+        tr.append(td); tbody.append(tr);
+      }
+      return;
+    }
+    const expanded = !!document.querySelector('#juris-wrap.is-expanded');
+    const rows = expanded ? j.data : j.data.slice(0, 12);
+    const selected = MT.area();
+    const chip = (dir) => {
+      const span = document.createElement('span');
+      span.className = 'mt-chip ' + (dir === 'increasing' ? 'mt-bad' : dir === 'decreasing' ? 'mt-ok' : 'mt-flat');
+      span.textContent = `${dir === 'increasing' ? '▲' : dir === 'decreasing' ? '▼' : '•'} ${dir}`;
+      return span;
+    };
+    const spark = (values, localMax) => {
+      const w = 104, h = 26, pad = 3;
+      const ns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('width', w); svg.setAttribute('height', h); svg.setAttribute('class', 'mt-spark');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', `Cases added in each of the last 12 weeks: ${values.join(', ')}`);
+      const xs = d3.scaleLinear().domain([0, values.length - 1]).range([pad, w - pad]);
+      const ys = d3.scaleLinear().domain([Math.min(0, d3.min(values)), Math.max(1, localMax)]).range([h - pad, pad]);
+      const area = document.createElementNS(ns, 'path');
+      area.setAttribute('d', d3.area().x((v, i) => xs(i)).y0(ys(0)).y1((v) => ys(v))(values));
+      area.style.fill = dash.colors[0]; area.style.opacity = '0.16';
+      const line = document.createElementNS(ns, 'path');
+      line.setAttribute('d', d3.line().x((v, i) => xs(i)).y((v) => ys(v))(values));
+      line.style.fill = 'none'; line.style.stroke = dash.colors[0]; line.style.strokeWidth = '1.5';
+      const dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('cx', xs(values.length - 1)); dot.setAttribute('cy', ys(values.at(-1))); dot.setAttribute('r', 2.5);
+      dot.style.fill = dash.colors[0];
+      svg.append(area, line, dot);
+      return svg;
+    };
+    tbody.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-key', encodeURIComponent(r.area));
+      tr.tabIndex = 0;
+      if (r.area === selected) tr.className = 'is-selected';
+      const td = (text, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; if (text != null) c.textContent = text; return c; };
+      const values = r.last12.split(',').map(Number);
+      const name = td(MT.label(r.area));
+      const sp = td(null); sp.append(spark(values, d3.max(values)));
+      const dir = td(null); dir.append(chip(r.direction));
+      tr.append(
+        name,
+        td(r.added_week == null ? '—' : MT.fmt(r.added_week), 'num'),
+        td(MT.fmt(r.ytd), 'num'),
+        td(r.ytd_prev == null ? '—' : MT.fmt(r.ytd_prev), 'num'),
+        sp,
+        dir,
+      );
+      const pick = () => dash.setParams({ area: r.area === selected ? MT.NATIONAL : r.area });
+      tr.addEventListener('click', pick);
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      return tr;
+    }));
+  });
+</script>

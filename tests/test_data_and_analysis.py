@@ -14,6 +14,16 @@ def w44():
     return Snapshot.load(SNAPS / "2026-w44.json")
 
 
+def test_old_upper_case_area_names():
+    from measles_sitrep.nndss import canonical_area
+    assert canonical_area("US RESIDENTS") == NATIONAL
+    assert canonical_area("NEW YORK CITY") == "New York City"
+    assert canonical_area("NORTHERN MARIANA ISLANDS") == "Commonwealth of Northern Mariana Islands"
+    assert canonical_area("Texas") == "Texas"
+    r = parse_row({"states": "WEST VIRGINIA", "year": "2023", "week": "5", "label": "Measles, Imported", "m1": "1"})
+    assert r.area == "West Virginia" and area_kind(r.area) == "jurisdiction"
+
+
 def test_parse_row_flags():
     r = parse_row({"states": "Iowa", "year": "2026", "week": "44", "label": "Measles, Indigenous",
                    "m1_flag": "-", "m2": "1.0", "m3_flag": "-", "m4": "7.0"})

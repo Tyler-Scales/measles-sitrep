@@ -42,6 +42,29 @@ TERRITORIES = {
 }
 
 
+STATES = {
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois",
+    "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+    "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+    "New Hampshire", "New Jersey", "New Mexico", "New York", "New York City", "North Carolina",
+    "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+    "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
+    "Washington", "West Virginia", "Wisconsin", "Wyoming",
+}
+# Rows published before 2025 use upper-case names and a few different spellings.
+_CANONICAL = {a.upper(): a for a in STATES | REGIONS | TERRITORIES | AGGREGATES} | {
+    "US RESIDENTS": "U.S. Residents",
+    "NON-US RESIDENTS": "Non-U.S. Residents",
+    "US TERRITORIES": "U.S. Territories",
+    "NORTHERN MARIANA ISLANDS": "Commonwealth of Northern Mariana Islands",
+}
+
+
+def canonical_area(name: str) -> str:
+    return _CANONICAL.get(name.strip().upper(), name.strip())
+
+
 def area_kind(area: str) -> str:
     if area in AGGREGATES:
         return "aggregate"
@@ -76,7 +99,7 @@ def parse_row(raw: dict) -> Row | None:
     if label is None:
         return None
     return Row(
-        area=raw["states"],
+        area=canonical_area(raw["states"]),
         year=int(raw["year"]),
         week=int(raw["week"]),
         label=label,
